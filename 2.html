@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>황금 군밤의 연대기 | 전설의 겨울 미식</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;700&display=swap');
+
+        :root {
+            --fire-orange: #ff4500;
+            --charcoal: #121212;
+            --gold: #ffcc00;
+            --smoke: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #050505; 
+            color: #fff; 
+            font-family: 'Noto Serif KR', serif; 
+            overflow-x: hidden;
+        }
+
+        /* --- 불꽃 캔버스 배경 --- */
+        #fire-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            filter: blur(1px);
+        }
+
+        /* --- 히어로 섹션 --- */
+        .hero {
+            height: 120vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #221100 0%, #050505 100%);
+        }
+
+        .title-box {
+            text-align: center;
+            z-index: 10;
+        }
+
+        .main-title {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 10rem;
+            line-height: 1;
+            background: linear-gradient(to bottom, #fff, var(--gold), var(--fire-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 50px rgba(255, 69, 0, 0.8));
+            animation: flicker 0.1s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.01); }
+        }
+
+        /* --- 대형 밤 오브젝트 --- */
+        .giant-chestnut {
+            position: absolute;
+            font-size: 20rem;
+            filter: drop-shadow(0 0 30px var(--gold));
+            opacity: 0.2;
+            z-index: 1;
+            animation: rotateChestnut 30s linear infinite;
+        }
+        @keyframes rotateChestnut {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- 복잡한 그리드 섹션 --- */
+        .content-section {
+            padding: 150px 10%;
+            background: rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+        }
+
+        .info-card {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 1px solid var(--gold);
+            padding: 60px;
+            position: relative;
+            transition: 0.5s;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: "栗"; /* 밤 률 */
+            position: absolute;
+            top: -20px; right: -20px;
+            font-size: 15rem;
+            color: rgba(255, 204, 0, 0.03);
+            font-weight: 900;
+        }
+
+        .info-card:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 0 70px rgba(255, 204, 0, 0.2);
+            border-color: #fff;
+        }
+
+        /* --- 안내 바 --- */
+        .official-notice {
+            background: var(--fire-orange);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-top: 5px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* --- 초장문 텍스트 구역 --- */
+        .epic-text {
+            max-width: 900px;
+            margin: 100px auto;
+            line-height: 2.2;
+            font-size: 1.3rem;
+            color: #ccc;
+            text-align: justify;
+        }
+
+        footer {
+            padding: 100px;
+            text-align: center;
+            border-top: 1px solid #333;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="fire-canvas"></canvas>
+
+<div class="official-notice">
+    ⚠️ 미식 가이드: 판매처의 위치, 영업시간 및 가격 정보는 반드시 공식 페이지나 SNS에서 재확인하시기 바랍니다. 정보는 예고 없이 변경될 수 있습니다.
+</div>
+
+<section class="hero">
+    <div class="giant-chestnut">🌰</div>
+    <div class="title-box">
+        <p style="letter-spacing: 15px; color: var(--gold); margin-bottom: 20px;">[ 熾 烈 韓 菓 ]</p>
+        <h1 class="main-title">황금 군밤</h1>
+        <p style="font-size: 1.5rem; margin-top: 30px; opacity: 0.8;">천 년의 불꽃이 빚어낸 궁극의 달콤함</p>
+    </div>
+</section>
+
+<main class="content-section">
+    <div class="grid-layout">
+        <div class="info-card">
+            <h2 style="color:var(--gold); font-size: 2.5rem; margin-bottom: 20px;">01. 화염의 미학</h2>
+            <p>군밤은 단순히 열을 가하는 것이 아닙니다. $220$°C의 고온에서 밤 껍질이 터지기 직전까지의 긴장을 견뎌야 비로소 속살이 황금빛으로 변합니다. 이것은 불과 시간의 예술입니다.</p>
+        </div>
+        <div class="info-card">
+            <h2 style="color:var(--gold); font-size: 2.5rem; margin-bottom: 20px;">02. 임금의 간식</h2>
+            <p>조선시대 고종 황제는 유난히 군밤을 즐겼다고 전해집니다. 한겨울 덕수궁 담벼락을 넘던 고소한 향기는 백성들에게도 겨울을 버티는 희망의 향기였습니다.</p>
+        </div>
+    </div>
+
+    <article class="epic-text">
+        <h3 style="color:var(--gold); font-size: 3rem; margin-bottom: 50px; text-align: center;">군밤의 연대기: 밤의 철학</h3>
+        <p>
+            밤은 고대부터 한반도 전역에서 자생하며 우리 민족의 허기를 달래주던 귀한 식량이었습니다. 특히 '군밤'은 수분을 날려 당도를 극한으로 끌어올리는 조리법으로, 현대의 어떤 디저트보다도 깊은 풍미를 자랑합니다. 
+            <br><br>
+            좋은 군밤을 고르는 법은 명확합니다. 껍질이 매끄럽고 단단하며, 손으로 눌렀을 때 묵직한 무게감이 느껴져야 합니다. 불에 구웠을 때 껍질이 자연스럽게 벌어지며 드러나는 노란 속살은 자연이 인간에게 선사하는 가장 순수한 형태의 황금입니다. 
+            <br><br>
+            우리는 이 사이트를 통해 전국 각지의 장인들이 굽는 군밤의 온도, 나무의 종류(참나무, 소나무 등)에 따른 향의 변화, 그리고 각 지역 명소의 군밤 판매 정보를 집대성하고자 합니다. 하지만 기억하십시오. 정보는 틀릴 수 있고 변경될 수 있으므로 정확한 정보는 반드시 공식 링크에서 다시 확인하시기 바랍니다. 
+            <br><br>
+            겨울의 찬바람 속에서 뜨거운 종이봉투를 손에 쥐었을 때 느껴지는 온기, 그것은 단순한 음식을 넘어선 위로입니다. 본 사이트에서는 그 온기를 디지털로 복원하여 여러분께 전달합니다.
+        </p>
+    </article>
+</main>
+
+<footer>
+    <h2 style="color: var(--gold); font-family: 'Black Han Sans'; font-size: 2rem;">황금 군밤 大百科</h2>
+    <p style="margin-top: 20px; opacity: 0.6;">전국의 군밤 명소 정보를 집대성합니다.</p>
+    <p style="margin-top: 40px; font-size: 0.8rem; color: #888;">
+        ※ 정확한 위치, 운영 시간, 금액 등은 반드시 공식 페이지를 통해 재확인하십시오. 당사는 정보의 불일치에 대해 책임을 지지 않습니다.
+    </p>
+</footer>
+
+<script>
+    // 불꽃 파티클 엔진
+    const canvas = document.getElementById('fire-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function init() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + Math.random() * 100;
+            this.size = Math.random() * 5 + 2;
+            this.speedY = Math.random() * 3 + 1;
+            this.color = `rgba(255, ${Math.floor(Math.random() * 150 + 50)}, 0, ${Math.random()})`;
+        }
+        update() {
+            this.y -= this.speedY;
+            this.x += Math.sin(this.y * 0.01);
+            if (this.y < -10) {
+                this.y = canvas.height + 10;
+                this.x = Math.random() * canvas.width;
+            }
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function createParticles() {
+        for (let i = 0; i < 150; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    createParticles();
+    animate();
+</script>
+
+</body>
+</html>
