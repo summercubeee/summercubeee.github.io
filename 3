@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전국 버터떡 대백과 | 대형 전도</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Song+Myung&display=swap');
+
+        :root {
+            --butter-gold: #fbbf24;
+            --butter-deep: #f59e0b;
+            --bg-dark: #020617;
+            --naver-green: #03c75a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Noto Serif KR', serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .official-notice {
+            background: var(--butter-deep);
+            color: #000;
+            padding: 12px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+
+        header h1 {
+            font-family: 'Song Myung';
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            color: var(--butter-gold);
+        }
+
+        header p {
+            color:#9ca3af;
+            font-size:0.95rem;
+            margin-top:10px;
+        }
+
+        .map-fullscreen-section {
+            position: relative;
+            width: 100vw;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .map-layout {
+            width: 100%;
+            max-width: 1200px;
+            display:flex;
+            gap:24px;
+            padding:0 16px;
+            flex-wrap:wrap;
+        }
+
+        .map-container {
+            position: relative;
+            flex:1 1 620px;
+            min-width:320px;
+        }
+
+        .real-map-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0.95;
+        }
+
+        #points-container {
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+        }
+
+        .marker {
+            position: absolute;
+            width: clamp(12px, 2vw, 20px);
+            height: clamp(12px, 2vw, 20px);
+            background: #fff;
+            border: 3px solid var(--butter-deep);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--butter-gold);
+            z-index: 10;
+            transition: 0.25s ease;
+            transform: translate(-50%, -50%);
+            pointer-events:auto;
+        }
+
+        .marker:hover {
+            transform: translate(-50%, -50%) scale(1.4);
+            background: var(--butter-gold);
+        }
+
+        .marker .tooltip {
+            position: absolute;
+            bottom: 140%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--butter-gold);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            color:#e5e7eb;
+        }
+        .marker:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 150%;
+        }
+
+        .map-popup {
+            flex:0 1 320px;
+            min-width:280px;
+            align-self:flex-start;
+            background: rgba(15,23,42,0.92);
+            border-radius: 10px;
+            border: 1px solid rgba(148,163,184,0.6);
+            padding: 18px 16px 16px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+            transform-origin: top right;
+            transform: scale(0.96) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s ease;
+        }
+
+        .map-popup.visible {
+            opacity: 1;
+            pointer-events:auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .map-popup-region {
+            font-size:0.85rem;
+            color: var(--butter-gold);
+            letter-spacing:2px;
+            text-transform:uppercase;
+            margin-bottom:6px;
+        }
+
+        .map-popup-title {
+            font-size:1.1rem;
+            margin-bottom:6px;
+        }
+
+        .map-popup-desc {
+            font-size:0.9rem;
+            color:#cbd5e1;
+            margin-bottom:14px;
+        }
+
+        .map-popup-buttons {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .btn {
+            flex:1;
+            border-radius:999px;
+            padding:8px 12px;
+            font-size:0.85rem;
+            cursor:pointer;
+            border:1px solid transparent;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            text-decoration:none;
+            transition:.2s;
+        }
+        .btn-outline {
+            background:transparent;
+            color:var(--butter-gold);
+            border-color:var(--butter-gold);
+        }
+        .btn-outline:hover {
+            background:var(--butter-gold);
+            color:#111827;
+        }
+        .btn-solid {
+            background:var(--butter-deep);
+            color:#111827;
+        }
+        .btn-solid:hover {
+            background:#fff;
+        }
+
+        .shopping-banner {
+            max-width: 1000px;
+            margin: 40px auto 10px;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, #020617, #0f172a);
+            border: 1px solid var(--butter-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            gap:16px;
+        }
+
+        .shop-btn {
+            background: var(--butter-deep);
+            color: #000;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            border-radius:999px;
+            font-size:0.9rem;
+        }
+        .shop-btn:hover { background:#fff; }
+
+        .coupang-note {
+            max-width:1200px;
+            margin:0 auto 30px;
+            padding:0 20px;
+            font-size:0.8rem;
+            color:#9ca3af;
+            line-height:1.6;
+        }
+
+        .grid-wrap {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 20px;
+        }
+
+        .grid-header {
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-bottom:16px;
+        }
+
+        .grid-header h2 {
+            font-size:1.3rem;
+        }
+
+        .current-filter {
+            font-size:0.8rem;
+            color:#e5e7eb;
+        }
+
+        .btn-reset {
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,0.8);
+            background:transparent;
+            color:#e5e7eb;
+            font-size:0.8rem;
+            padding:4px 10px;
+            cursor:pointer;
+        }
+        .btn-reset:hover {
+            background:var(--butter-gold);
+            color:#111827;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(251, 191, 36, 0.18);
+            padding: 18px 18px 14px;
+            transition: 0.3s;
+            border-radius:10px;
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .card::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+            background: radial-gradient(circle at top left, rgba(251,191,36,0.18), transparent 55%);
+            opacity:0;
+            transition:.35s;
+        }
+
+        .card.expanded::before {
+            opacity:1;
+        }
+
+        .card.hidden { display:none; }
+
+        .card-region {
+            font-size:0.78rem;
+            color:var(--butter-gold);
+            letter-spacing:2px;
+            text-transform:uppercase;
+            margin-bottom:6px;
+        }
+
+        .card h3 {
+            color:var(--butter-gold);
+            margin-bottom:6px;
+            font-size:1.05rem;
+        }
+
+        .card p {
+            font-size:0.85rem;
+            color:#9ca3af;
+            margin-bottom:8px;
+        }
+
+        .card-extra {
+            max-height:0;
+            overflow:hidden;
+            transition:max-height .3s ease;
+        }
+        .card.expanded .card-extra {
+            max-height:160px;
+        }
+
+        .card-actions {
+            display:flex;
+            gap:6px;
+            flex-wrap:wrap;
+            margin-top:8px;
+        }
+
+        .btn-naver {
+            flex:1;
+            border-radius:999px;
+            border:1px solid var(--naver-green);
+            color: var(--naver-green);
+            padding:7px 10px;
+            text-align:center;
+            text-decoration:none;
+            font-size:0.8rem;
+            font-weight:bold;
+            background:transparent;
+            transition:.2s;
+        }
+        .btn-naver:hover {
+            background: var(--naver-green);
+            color:#fff;
+        }
+
+        .btn-buy-small {
+            flex:1;
+            border-radius:999px;
+            border:1px solid var(--butter-deep);
+            background: var(--butter-deep);
+            color:#111827;
+            font-size:0.8rem;
+            font-weight:bold;
+            padding:7px 10px;
+            cursor:pointer;
+            transition:.2s;
+        }
+        .btn-buy-small:hover { background:#fff; }
+
+        #btn-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 46px;
+            height: 46px;
+            background: var(--butter-gold);
+            border: none;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            font-size:0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .map-layout { flex-direction:column; }
+            .map-popup { order:-1; width:100%; }
+            .shopping-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="official-notice">
+    정확한 주소, 시간, 금액 정보는 변경될 수 있으므로 반드시 네이버 지도 등 공식 페이지에서 재확인하십시오.
+</div>
+
+<header>
+    <h1>전국 버터떡 대백과 전도</h1>
+    <p>실제 지도를 바탕으로 주요 버터떡 명소를 박아 넣은 인터랙티브 아틀라스입니다.</p>
+</header>
+
+<section class="map-fullscreen-section">
+    <div class="map-layout">
+        <div class="map-container">
+            <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-011158.png"
+                 class="real-map-img" alt="대한민국 지도">
+
+            <div id="points-container"></div>
+        </div>
+
+        <aside class="map-popup" id="map-popup">
+            <div class="map-popup-region" id="popup-region">지역 선택 대기</div>
+            <div class="map-popup-title" id="popup-title">지도 위의 점을 클릭해 주세요</div>
+            <p class="map-popup-desc" id="popup-desc">
+                특정 버터떡 명소를 누르면 이곳에 간단한 설명과 함께
+                지도에서 바로 탐색 / 인터넷 구매 버튼이 나타납니다.
+            </p>
+            <div class="map-popup-buttons" id="popup-buttons"></div>
+        </aside>
+    </div>
+</section>
+
+<div class="shopping-banner">
+    <div>
+        <h2 style="color:var(--butter-gold); margin-bottom:5px;">장인의 버터떡 쇼핑하기</h2>
+        <p style="color:#888; font-size:0.9rem;">클릭하시면 쿠팡 파트너스 링크로 연결됩니다.</p>
+    </div>
+    <button onclick="openGlobalShop()" class="shop-btn">전국 버터떡 쇼핑 〉</button>
+</div>
+
+<div class="coupang-note">
+    본 페이지의 인터넷 구매 링크는 쿠팡 파트너스 활동의 일환으로,<br>
+    해당 링크를 통해 제품을 구매하시면 이에 따른 일정액의 수수료를 제공받을 수 있습니다.
+</div>
+
+<div class="grid-wrap">
+    <div class="grid-header">
+        <div>
+            <h2>버터떡 명소 카드 리스트</h2>
+            <div class="current-filter">현재 선택: <span id="current-filter-label">전체</span></div>
+        </div>
+        <button class="btn-reset" type="button" onclick="resetSelection()">선택 해제</button>
+    </div>
+
+    <div class="card-grid" id="card-grid"></div>
+</div>
+
+<button id="btn-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">TOP</button>
+
+<footer style="padding: 40px; text-align: center; color: #444; font-size: 0.8rem;">
+    <p>정보는 틀릴 수 있고 변경될 수 있으므로 공식 링크에서 다시 확인하세요. &copy; 2026</p>
+</footer>
+
+<script>
+    const COUPANG_LINK = "https://link.coupang.com/a/d7Eact";
+
+    const spots = [
+        // 서울권 (y ≈ 27%)
+        { id:1, region:'서울', name:"새들러하우스",    loc:"서울 강남구 도산대로17길 10 B1",      desc:"상하이식 버터 쫀득떡, 플레인·초코·치즈 라인업.", x:46,  y:27 },
+        { id:2, region:'서울', name:"이웃집통통이",    loc:"서울 강남구 선릉로161길 19 1층",     desc:"글루텐 프리 상하이 버터떡, 압구정·망원점 운영.", x:47,  y:26.5 },
+        { id:3, region:'서울', name:"하우스엠",        loc:"서울 강남구 논현로26길 42 1층",      desc:"하트 모양 겉바속쫀 버터떡 카페.",                   x:45,  y:28 },
+        { id:4, region:'서울', name:"하츠베이커리 성수",loc:"서울 성동구 연무장길 37-14",        desc:"왕버터떡으로 유명한 성수 디저트 스폿.",             x:49,  y:27 },
+        { id:5, region:'서울', name:"오우드 성수",      loc:"서울 성동구 성수이로24길 36 2층",   desc:"마들렌 모양 버터떡, 성수 카페.",                    x:50,  y:27.5 },
+        { id:6, region:'서울', name:"늘해피",          loc:"서울 강남구 학동로 342 지하1층 110-2호", desc:"버터떡 2개·5개 묶음 판매, 가볍게 즐기기 좋은 곳.", x:45,  y:29 },
+        { id:7, region:'서울', name:"구십이도",        loc:"서울 광진구 능동 221-13",            desc:"상하이 출신 디저트 셰프가 만든 버터떡 카페.",      x:50.5,y:26.5 },
+        { id:8, region:'서울', name:"카페 봉맨션",      loc:"서울 서대문구 가좌로 118 2층",       desc:"상하이 스타일 버터떡을 즐길 수 있는 카페.",        x:42,  y:27 },
+        { id:9, region:'서울', name:"돌체디앤",        loc:"서울 마포구 월드컵로17길 61",        desc:"매일 소량만 나오는 버터떡, 쿠키 전문점.",          x:43,  y:27.5 },
+        { id:10, region:'서울', name:"쿠키앤클레이",   loc:"서울 종로구 삼일대로 437 1층 103호", desc:"여러 타임에 나뉘어 나오는 버터떡.",                x:45,  y:26.5 },
+        { id:11, region:'서울', name:"달콤라르",        loc:"서울 은평구 진관4로 17 818동 101호", desc:"밀가루 없이 안데스 소금 한 알 올린 단짠 버터떡.", x:40,  y:27 },
+        { id:12, region:'서울', name:"카페 이오이",      loc:"서울 마포구 대흥동",                 desc:"하트 모양, 1개 1,500원 가성비 버터떡.",           x:42,  y:28 },
+
+        // 인천
+        { id:13, region:'인천', name:"수제과점",        loc:"인천 미추홀구 경원대로652번길 25-11", desc:"상하이 버터떡 전문 인천 맛집.",                   x:38,  y:30 },
+
+        // 경기
+        { id:14, region:'경기', name:"오브더밀",        loc:"경기 안성시",                        desc:"안성 상하이 버터떡으로 알려진 베이커리.",          x:48,  y:42 },
+        { id:15, region:'경기', name:"비에델",          loc:"경기 평택시 고덕",                    desc:"평택 고덕 상하이 버터떡 카페.",                    x:46,  y:44 },
+
+        // 강원 (서울보다 위쪽)
+        { id:16, region:'강원', name:"춘천 감자밭",     loc:"강원 춘천시",                        desc:"치즈 버터 감자떡 스타일 퓨전 간식.",              x:55,  y:21 },
+        { id:17, region:'강원', name:"정선 수리취떡",   loc:"강원 정선군",                        desc:"수리취 버터 와플 떡, 이색 미식.",                 x:60,  y:26 },
+
+        // 충청
+        { id:18, region:'충북', name:"청주 본정",      loc:"충북 청주시",                        desc:"버터 크림 떡 케이크 계열.",                      x:50,  y:39 },
+        { id:19, region:'충남', name:"공주 부자떡집",  loc:"충남 공주시",                        desc:"알밤 버터 찹쌀떡.",                               x:45,  y:43 },
+        { id:20, region:'대전', name:"성심당",         loc:"대전 서구",                          desc:"성심당 기술력이 담긴 버터 풍미 떡.",              x:49,  y:46 },
+
+        // 전라
+        { id:21, region:'전북', name:"전주 교동떡갈비",loc:"전북 전주시",                        desc:"한옥마을 구워먹는 버터 치즈떡.",                  x:43,  y:55 },
+        { id:22, region:'전북', name:"익산 농협 떡방", loc:"전북 익산시",                        desc:"생크림 찹쌀떡 대란템.",                           x:45,  y:52 },
+        { id:23, region:'광주', name:"광주 버터떡 카페",loc:"광주광역시",                        desc:"광주 버터떡 핫플들을 대표하는 집.",               x:40,  y:62 },
+        { id:24, region:'전남', name:"영광 민속떡집",  loc:"전남 영광군",                        desc:"모시 버터 크림떡.",                              x:35,  y:66 },
+
+        // 경북·대구
+        { id:25, region:'경북', name:"안동 버선버선",  loc:"경북 안동시",                        desc:"안동 종가집 손맛에 버터 풍미를 더한 떡.",         x:63,  y:40 },
+        { id:26, region:'경북', name:"황남빵(퓨전)",   loc:"경북 경주시",                        desc:"황남동 일대 버터 앙금 계열 디저트.",             x:68,  y:50 },
+        { id:27, region:'대구', name:"대구 버터떡집",  loc:"대구 중구",                          desc:"상하이 버터떡 콘셉트 디저트 카페.",              x:64,  y:48 },
+
+        // 경남
+        { id:28, region:'경남', name:"의령 망개떡 변주",loc:"경남 의령군",                       desc:"유제품 향을 살짝 더한 망개떡 스타일.",           x:57,  y:56 },
+
+        // 부산 (아래에서 38% → 위에서 62%)
+        { id:29, region:'부산', name:"희와제과",       loc:"부산 진구",                          desc:"버터 팥 크림 떡빵 계열 디저트.",                 x:69,  y:62 },
+        { id:30, region:'부산', name:"명가떡집 전포",   loc:"부산 전포동",                        desc:"서면 일대 앙버터 설기로 유명한 떡집.",          x:71,  y:63 },
+
+        // 제주
+        { id:31, region:'제주', name:"아베베 베이커리", loc:"제주 제주시",                        desc:"제주 재료와 버터 떡·도넛을 함께 파는 베이커리.", x:50,  y:84 }
+    ];
+
+    const pointContainer = document.getElementById('points-container');
+    const cardGrid = document.getElementById('card-grid');
+    const popup = document.getElementById('map-popup');
+    const popupRegion = document.getElementById('popup-region');
+    const popupTitle = document.getElementById('popup-title');
+    const popupDesc = document.getElementById('popup-desc');
+    const popupButtons = document.getElementById('popup-buttons');
+    const currentFilterLabel = document.getElementById('current-filter-label');
+
+    // 카드 생성
+    spots.forEach(spot => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.id = `card-${spot.id}`;
+        card.dataset.region = spot.region;
+        card.innerHTML = `
+            <div class="card-region">${spot.region}</div>
+            <h3>${spot.name}</h3>
+            <p>${spot.desc}</p>
+            <div class="card-extra">
+                <p>📍 ${spot.loc}</p>
+                <div class="card-actions">
+                    <a class="btn-naver"
+                       href="https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}"
+                       target="_blank">
+                        네이버 지도에서 탐색하기
+                    </a>
+                    <button class="btn-buy-small"
+                            onclick="openShopFor(); event.stopPropagation();">
+                        인터넷쇼핑몰에서 구매하기
+                    </button>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => toggleCard(card.id));
+        cardGrid.appendChild(card);
+    });
+
+    // 지도 포인트 생성
+    spots.forEach(spot => {
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = spot.x + '%';
+        marker.style.top  = spot.y + '%';
+        marker.dataset.id = spot.id;
+        marker.dataset.region = spot.region;
+        marker.innerHTML = `
+            <div class="tooltip">
+                ${spot.name}<br>
+                <span style="color:#9ca3af;font-size:11px;">${spot.loc}</span>
+            </div>
+        `;
+        marker.onclick = () => handleMarkerClick(spot);
+        pointContainer.appendChild(marker);
+    });
+
+    function handleMarkerClick(spot) {
+        popupRegion.textContent = spot.region;
+        popupTitle.textContent = spot.name;
+        popupDesc.textContent = `${spot.desc} ${spot.loc} 일대에 위치한 버터떡 명소입니다.`;
+        popupButtons.innerHTML = '';
+
+        const btnMap = document.createElement('a');
+        btnMap.className = 'btn btn-outline';
+        btnMap.href = "https://map.naver.com/v5/search/" + encodeURIComponent(spot.name);
+        btnMap.target = "_blank";
+        btnMap.textContent = "지도에서 탐색하기";
+
+        const btnShop = document.createElement('button');
+        btnShop.type = "button";
+        btnShop.className = 'btn btn-solid';
+        btnShop.textContent = "인터넷구매하기";
+        btnShop.onclick = () => openShopFor();
+
+        popupButtons.appendChild(btnMap);
+        popupButtons.appendChild(btnShop);
+        popup.classList.add('visible');
+
+        selectCard(spot.id);
+        currentFilterLabel.textContent = `${spot.region} · ${spot.name}`;
+    }
+
+    function toggleCard(cardId) {
+        const card = document.getElementById(cardId);
+        const expanded = card.classList.contains('expanded');
+        document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
+        if (!expanded) {
+            card.classList.add('expanded');
+            card.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
+    }
+
+    function selectCard(id) {
+        const card = document.getElementById(`card-${id}`);
+        if (!card) return;
+        document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
+        card.classList.add('expanded');
+        card.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+
+    function resetSelection() {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded','hidden'));
+        document.querySelectorAll('.marker').forEach(m => m.style.display = 'block');
+        popup.classList.remove('visible');
+        currentFilterLabel.textContent = '전체';
+    }
+
+    function openShopFor() {
+        window.open(COUPANG_LINK, "_blank");
+    }
+
+    function openGlobalShop() {
+        window.open(COUPANG_LINK, "_blank");
+    }
+</script>
+
+</body>
+</html>
