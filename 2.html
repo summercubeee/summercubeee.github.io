@@ -11,7 +11,8 @@
             --butter-gold: #fbbf24;
             --butter-deep: #f59e0b;
             --bg-dark: #020617;
-            --accent-red: #b91c1c;
+            --naver-green: #03c75a;
+            --buy-orange: #ff6b00;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,283 +22,175 @@
             font-family: 'Noto Serif KR', serif;
             overflow-x: hidden;
             word-break: keep-all;
+            scroll-behavior: smooth;
         }
 
-        /* --- 배경 입자 (금가루) --- */
-        #butter-dust {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.5;
+        .ads-notice {
+            background: #111; color: #777; font-size: 0.75rem; padding: 10px; text-align: center; border-bottom: 1px solid #222;
         }
 
-        /* --- 상단 공식 안내 바 --- */
         .official-notice {
-            background: var(--butter-deep);
-            color: #000;
-            padding: 15px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 0.95rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            background: var(--butter-deep); color: #000; padding: 12px; text-align: center;
+            font-weight: 900; font-size: 0.85rem; position: sticky; top: 0; z-index: 1000;
         }
 
-        /* --- 히어로 섹션 --- */
-        .hero {
-            padding: 80px 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
+        .hero { padding: 60px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
         .main-title {
             font-family: 'Song Myung', serif;
-            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-size: clamp(2.5rem, 7vw, 5rem);
             background: linear-gradient(to bottom, #fff, var(--butter-gold), var(--butter-deep));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
-            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.4));
         }
 
-        /* --- 지도 컨테이너 (제공해주신 이미지 적용) --- */
+        .hero-buy-btn {
+            background: var(--buy-orange); color: #fff; padding: 15px 40px; border-radius: 50px;
+            font-weight: 900; font-size: 1.1rem; margin-bottom: 40px; border: none; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3); transition: 0.3s;
+        }
+        .hero-buy-btn:hover { transform: scale(1.05); background: #ff8533; }
+
+        /* 지도 섹션 */
         .map-wrapper {
-            position: relative;
-            max-width: 800px;
-            width: 100%;
-            margin-top: 40px;
-            border: 3px double var(--butter-gold);
-            background: rgba(255,255,255,0.02);
-            padding: 10px;
+            position: relative; max-width: 900px; width: 100%; margin: 20px 0;
+            border: 2px solid var(--butter-gold); background: #000; padding: 10px;
         }
+        .real-map { width: 100%; height: auto; display: block; opacity: 0.8; }
 
-        .real-map {
-            width: 100%;
-            height: auto;
-            display: block;
-            opacity: 0.9;
-        }
-
-        /* --- 지도 포인트 & 텍스트 툴팁 --- */
         .marker {
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: #fff;
-            border: 3px solid var(--butter-deep);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--butter-gold);
-            z-index: 10;
-            transition: 0.3s;
+            position: absolute; width: 22px; height: 22px; background: #fff;
+            border: 4px solid var(--butter-deep); border-radius: 50%; cursor: pointer;
+            box-shadow: 0 0 15px var(--butter-gold); z-index: 10; transition: 0.3s;
         }
-
-        .marker:hover {
-            transform: scale(1.5);
-            background: var(--butter-gold);
-            box-shadow: 0 0 25px #fff;
+        .marker:hover { transform: scale(1.4); background: var(--butter-gold); }
+        .marker-tooltip {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.9); border: 1px solid var(--butter-gold);
+            color: #fff; padding: 5px 12px; border-radius: 4px; font-size: 0.85rem;
+            white-space: nowrap; opacity: 0; visibility: hidden; transition: 0.2s;
         }
+        .marker:hover .marker-tooltip { opacity: 1; visibility: visible; }
 
-        /* 마우스 올리면 나오는 텍스트박스 (툴팁) */
-        .tooltip {
-            position: absolute;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid var(--butter-gold);
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            color: var(--butter-gold);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
-            pointer-events: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            z-index: 20;
-        }
-
-        .marker:hover .tooltip {
-            opacity: 1;
-            visibility: visible;
-            bottom: 30px;
-        }
-
-        /* --- 하단 리스트 그리드 --- */
+        /* 리스트 그리드 */
         .content-list {
-            max-width: 1200px;
-            margin: 60px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 0 20px;
+            max-width: 1200px; margin: 40px auto; padding: 0 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px;
         }
-
         .card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            padding: 25px;
-            transition: 0.4s;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(251, 191, 36, 0.1);
+            padding: 25px; scroll-margin-top: 130px; transition: 0.4s;
         }
+        .card:hover { border-color: var(--butter-gold); background: rgba(255,255,255,0.06); }
+        .card-tag { display: inline-block; background: #222; color: var(--butter-gold); font-size: 0.7rem; padding: 2px 8px; margin-bottom: 10px; border-radius: 2px; }
 
-        .card:hover {
-            border-color: var(--butter-gold);
-            background: rgba(251, 191, 36, 0.05);
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn {
+            padding: 10px 5px; border-radius: 4px; text-decoration: none; font-size: 0.75rem;
+            font-weight: bold; text-align: center; transition: 0.3s; cursor: pointer; border: none;
         }
+        .btn-naver { border: 1px solid var(--naver-green); color: var(--naver-green); background: transparent; }
+        .btn-naver:hover { background: var(--naver-green); color: #fff; }
+        .btn-buy { border: 1px solid var(--buy-orange); color: var(--buy-orange); background: transparent; }
+        .btn-buy:hover { background: var(--buy-orange); color: #fff; }
 
-        /* --- 상단 이동 버튼 --- */
-        #btn-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: var(--butter-gold);
-            border: none;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            display: none; /* 스크롤 전 숨김 */
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        footer {
-            padding: 60px;
-            text-align: center;
-            border-top: 1px solid #222;
-            font-size: 0.85rem;
-            color: #666;
-        }
+        footer { padding: 60px; text-align: center; border-top: 1px solid #111; color: #555; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<canvas id="butter-dust"></canvas>
+<div class="ads-notice">이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
 
 <div class="official-notice">
-    ⚠️ 정확한 주소, 시간 및 금액 정보는 반드시 공식 페이지에서 재확인하세요. 정보는 틀릴 수 있고 변경될 수 있습니다.
+    ⚠️ 전화번호, 주소, 시간, 금액 정보는 반드시 공식 페이지에서 재확인하십시오. 정보는 변경될 수 있으므로 공식 링크 확인이 필수입니다.
 </div>
 
 <section class="hero">
-    <h1 class="main-title">버터떡 대백과 전도</h1>
-    <p style="color:#aaa;">지도 위의 명소 포인트에 마우스를 올려 상호명을 확인하세요.</p>
+    <h1 class="main-title">전국 버터떡 대백과</h1>
+    <button onclick="showCoupangPopup()" class="hero-buy-btn">🔥 인기 버터떡 구매하기</button>
 
     <div class="map-wrapper">
-        <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png" alt="전국 버터떡 지도" class="real-map">
-        
+        <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png" class="real-map">
         <div id="map-points"></div>
     </div>
 </section>
 
 <div class="content-list" id="card-grid"></div>
 
-<button id="btn-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">TOP</button>
-
 <footer>
-    <p>전국 버터떡 명소 총집합 | 정보는 반드시 공식 링크에서 다시 확인하시기 바랍니다.</p>
-    <p>&copy; 2026 황금버터떡비기. All Rights Reserved.</p>
+    <p>정보는 틀릴 수 있고 변경될 수 있으므로 공식 링크에서 다시 확인하세요.</p>
+    <p style="margin-top:10px;">&copy; 2026 전국 버터떡 명소 총합 에디션</p>
 </footer>
 
 <script>
-    // 팩트체크된 실제 명소 데이터 22개
+    // 지역별 지도 포인트 데이터 (수정사항2 반영)
+    const regions = [
+        { name: "서울", x: 45, y: 28 }, { name: "경기", x: 42, y: 22 }, { name: "인천", x: 38, y: 30 },
+        { name: "강원", x: 60, y: 20 }, { name: "충북", x: 55, y: 45 }, { name: "충남", x: 40, y: 55 },
+        { name: "대전", x: 50, y: 58 }, { name: "경북", x: 70, y: 55 }, { name: "대구", x: 68, y: 65 },
+        { name: "전북", x: 42, y: 70 }, { name: "전남", x: 35, y: 85 }, { name: "광주", x: 38, y: 78 },
+        { name: "경남", x: 60, y: 80 }, { name: "부산", x: 75, y: 85 }, { name: "제주", x: 40, y: 95 }
+    ];
+
+    // 상호명 리스트 데이터 (수정사항1 반영)
     const spots = [
-        { id: 1, name: "서울 구름떡집", x: 45, y: 28, desc: "흑임자 버터 샌드 명소" },
-        { id: 2, name: "서울 자연도소금빵", x: 43, y: 25, desc: "떡처럼 쫄깃한 소금버터빵" },
-        { id: 3, name: "서울 경기떡집", x: 47, y: 30, desc: "이티떡 노포" },
-        { id: 4, name: "춘천 정남미명가", x: 58, y: 22, desc: "강원도 감자빵 대명사" },
-        { id: 5, name: "파주 좋은날떡집", x: 40, y: 18, desc: "모시 퓨전 버터떡" },
-        { id: 6, name: "인천 인천당", x: 38, y: 32, desc: "버터 구운 떡 전문" },
-        { id: 7, name: "정선 수리취떡", x: 68, y: 35, desc: "수리취 버터 와플" },
-        { id: 8, name: "춘천 감자밭", x: 60, y: 25, desc: "치즈 버터 감자떡" },
-        { id: 9, name: "청주 본정", x: 50, y: 48, desc: "초코 버터 떡 케이크" },
-        { id: 10, name: "공주 부자떡집", x: 45, y: 55, desc: "알밤 버터 찹쌀떡" },
-        { id: 11, name: "대전 성심당", x: 52, y: 60, desc: "버터 쑥떡 퓨전" },
-        { id: 12, name: "전주 교동떡갈비", x: 40, y: 70, desc: "구워먹는 치즈 버터떡" },
-        { id: 13, name: "익산 농협", x: 43, y: 65, desc: "생크림 찹쌀떡 대란템" },
-        { id: 14, name: "영광 민속떡집", x: 32, y: 75, desc: "모시 버터 크림떡" },
-        { id: 15, name: "안동 버선버선", x: 72, y: 52, desc: "버터 인절미 구이" },
-        { id: 16, name: "경주 황남빵", x: 78, y: 68, desc: "버터 앙금 퓨전 떡" },
-        { id: 17, name: "의령 망개떡", x: 62, y: 75, desc: "이색 버터 망개떡" },
-        { id: 18, name: "부산 희와제과", x: 75, y: 80, desc: "팥 크림 버터 떡빵 명소" },
-        { id: 19, name: "부산 명가떡집", x: 78, y: 83, desc: "서면 앙버터 설기" },
-        { id: 20, name: "제주 오메기떡", x: 40, y: 92, desc: "버터 크림 오메기떡" },
-        { id: 21, name: "제주 아베베", x: 45, y: 95, desc: "제주 떡 도너츠" },
-        { id: 22, name: "전국 떡보의하루", x: 55, y: 40, desc: "버터 꿀 백설기" }
+        { name: "새들러하우스", feature: "상하이식 버터 쫀득떡(플레인·초코·치즈)", location: "서울 강남구" },
+        { name: "이웃집통통이", feature: "글루텐 프리 상하이 버터떡, 국내 초창기", location: "서울 강남구·마포구" },
+        { name: "하우스엠", feature: "하트 모양 겉바속쫀 버터떡", location: "서울 강남구" },
+        { name: "하츠베이커리 성수", feature: "왕버터떡(대형 버터떡)", location: "서울 성동구" },
+        { name: "늘해피", feature: "버터떡 2개·5개 묶음 판매", location: "서울 강남구" },
+        { name: "구십이도", feature: "밤톨 모양 버터떡", location: "서울 광진구" },
+        { name: "카페봉맨션", feature: "카페 버터떡 메뉴 판매", location: "서울 서대문구" },
+        { name: "오우드(Oude)", feature: "마들렌 모양 버터떡", location: "서울 성동구" },
+        { name: "데이라이트", feature: "디저트 플래터에 버터떡 구성", location: "서울 구로구 일대" },
+        { name: "온기", feature: "자라메 설탕·플뢰르드셀 단짠 버터떡", location: "서울 서초구 일대" },
+        { name: "카페 이오이", feature: "하트 모양 버터떡, 1개 1,500원", location: "서울 마포구" },
+        { name: "좋은자리", feature: "떡구이·버터구이 안주, 버터떡 류", location: "서울 강남구(가로수길)" },
+        { name: "오복떡집", feature: "떡구이·버터 떡구이류, 버터떡 계열", location: "서울 성동구(성수동)" },
+        { name: "정애맛담", feature: "전통 떡+버터 담백한 버터 떡구이", location: "서울 관악구(샤로수길)" },
+        { name: "도올쇠 서울대입구", feature: "술안주형 버터 떡구이", location: "서울 관악구" },
+        { name: "수제과점", feature: "상하이 버터떡 전문, 인천 맛집", location: "인천 미추홀구" },
+        { name: "오브더밀", feature: "상하이 버터떡, 안성 버터떡 맛집", location: "경기 안성시" },
+        { name: "비에델", feature: "평택 고덕 버터떡 맛집으로 언급", location: "경기 평택시" },
+        { name: "광주 BBB 등(복수)", feature: "광주 버터떡 핫플 모음(여러 카페)", location: "광주광역시" },
+        { name: "기타 서울 카페 N곳", feature: "노원·사당·성수 등 76곳 중 일부", location: "서울·경기 다수" }
     ];
 
     const pointContainer = document.getElementById('map-points');
     const cardGrid = document.getElementById('card-grid');
 
-    spots.forEach(s => {
-        // 지도 포인트 추가
-        pointContainer.innerHTML += `
-            <div class="marker" style="left: ${s.x}%; top: ${s.y}%;">
-                <div class="tooltip">${s.name}</div>
-            </div>
-        `;
+    // 지도 포인트 생성 (지역별 검색 연동)
+    regions.forEach(r => {
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = `${r.x}%`;
+        marker.style.top = `${r.y}%`;
+        marker.innerHTML = `<div class="marker-tooltip">${r.name} 버터떡 찾기</div>`;
+        
+        // 클릭 시 네이버 지도 해당 지역 검색 결과로 이동
+        marker.onclick = () => {
+            window.open(`https://map.naver.com/v5/search/${encodeURIComponent(r.name + ' 버터떡')}`, '_blank');
+        };
+        pointContainer.appendChild(marker);
+    });
 
-        // 하단 카드 추가
+    // 리스트 카드 생성
+    spots.forEach((s, index) => {
         cardGrid.innerHTML += `
             <div class="card">
-                <h3 style="color:var(--butter-gold); margin-bottom:10px;">${s.name}</h3>
-                <p style="font-size:0.9rem; color:#ccc;">${s.desc}</p>
-                <div style="margin-top:15px; font-size:0.8rem; color:var(--butter-gold);">공식 페이지 확인 필수 〉</div>
+                <span class="card-tag">${s.location}</span>
+                <h3 style="color:var(--butter-gold); margin-bottom:8px;">${s.name}</h3>
+                <p style="font-size:0.85rem; color:#ccc; line-height:1.6; height:3.2em; overflow:hidden;">${s.feature}</p>
+                <div class="button-group">
+                    <a href="https://map.naver.com/v5/search/${encodeURIComponent(s.name)}" target="_blank" class="btn btn-naver">📍 지도 확인</a>
+                    <button onclick="showCoupangPopup()" class="btn btn-buy">🛒 인터넷 구매</button>
+                </div>
             </div>
         `;
     });
 
-    // 스크롤 시 Top 버튼 노출
-    window.onscroll = () => {
-        const btn = document.getElementById('btn-top');
-        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = "block";
-        } else {
-            btn.style.display = "none";
-        }
-    };
-
-    // 금가루 입자 애니메이션 (캔버스)
-    const canvas = document.getElementById('butter-dust');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    function init() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+    function showCoupangPopup() {
+        alert("쿠팡을 여기다 걸면 됩니다");
     }
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2;
-            this.speedX = Math.random() * 0.5 - 0.25;
-            this.speedY = Math.random() * 0.5 - 0.25;
-        }
-        update() {
-            this.x += this.speedX; this.y += this.speedY;
-            if(this.x > canvas.width) this.x = 0;
-            if(this.y > canvas.height) this.y = 0;
-        }
-        draw() {
-            ctx.fillStyle = '#fbbf24';
-            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-        }
-    }
-    for(let i=0; i<100; i++) particles.push(new Particle());
-    function animate() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
-    }
-    window.addEventListener('resize', init);
-    init(); animate();
 </script>
-
 </body>
 </html>
