@@ -2,160 +2,442 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-POP UNIVERSE: THE VISUAL EXPLOSION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Noto+Sans+KR:wght@400;900&family=Anton&family=Megrim&family=Codystar&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg-color: #0c0e12;
-            --point-gold: #d4af37;
-            --point-red: #8b0000;
-            --text-light: #e2e8f0;
-            --korean-font: 'Noto Serif KR', serif;
+            --primary-glow: #ff00ff; /* Neon Pink */
+            --secondary-glow: #00ffff; /* Neon Cyan */
+            --tertiary-glow: #ffff00; /* Neon Yellow */
+            --quaternary-glow: #ff4500; /* Neon Orange */
+            --bg-dark: #000000;
+            --text-main: #ffffff;
         }
 
-        body {
+        /* --- 기본 설정 --- */
+        body, html {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-light);
-            font-family: var(--korean-font);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Noto Sans KR', sans-serif;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        /* 전통 문양 배경 */
-        .tradition-bg {
+        /* --- 빼곡한 우주 배경 (상단 집중) --- */
+        .universe-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); /* 창살 느낌 */
-            opacity: 0.1;
-            z-index: -1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 0, 255, 0.3), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 255, 0.3), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 0, 0.2), transparent 50%),
+                black;
+            z-index: -3;
         }
 
-        /* 히어로 섹션 */
-        .hero {
-            position: relative;
+        /* 수많은 별 (크기, 속도 다름) */
+        .stars-container {
+            position: absolute;
+            width: 100%; height: 200%; /* 더 길게 */
+            top: 0; left: 0;
+            z-index: -2;
+        }
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite linear;
+            opacity: var(--opacity);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(0.5); }
+        }
+
+        /* --- 떠다니는 아이콘, 이모티콘, 도형 (상단 집중) --- */
+        .floating-elements {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 150vh; /* 상단에 집중 */
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .element {
+            position: absolute;
+            font-size: var(--size);
+            color: var(--color);
+            opacity: var(--opacity);
+            animation: float var(--duration) infinite ease-in-out;
+            filter: drop-shadow(0 0 var(--glow) var(--color));
+        }
+
+        /* 아이콘/이모티콘 예시 (JS로 더 많이 생성) */
+        .icon { font-family: 'Codystar', cursive; } /* 별모양 아이콘용 폰트 */
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -30px) rotate(5deg); }
+            50% { transform: translate(-20px, 30px) rotate(-5deg); }
+            75% { transform: translate(30px, -10px) rotate(10deg); }
+        }
+
+        /* --- 마우스 포인터 팔로워 (더 화려하게) --- */
+        .cursor-follower {
+            position: fixed;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255, 0, 255, 0.15) 0%, rgba(0, 255, 255, 0.1) 40%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            filter: blur(30px);
+        }
+
+        /* --- 헤더/히어로 섹션 (극한의 압박감) --- */
+        header {
             height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            border-bottom: 5px solid var(--point-gold);
-            background: radial-gradient(circle, #1e293b 0%, #0c0e12 100%);
+            position: relative;
+            perspective: 1000px;
+            padding: 0 5%;
         }
 
-        .mystic-symbol {
-            font-size: 5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px var(--point-gold);
+        /* 글리치 애니메이션 (더 강렬하게) */
+        .glitch {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 12vw;
+            font-weight: 700;
+            line-height: 0.8;
+            text-transform: uppercase;
+            position: relative;
+            color: var(--text-main);
+            text-shadow: 0.1em 0 0 rgba(255, 0, 255, 0.9),
+                        -0.05em -0.1em 0 rgba(0, 255, 255, 0.9),
+                        0.05em 0.1em 0 rgba(255, 255, 0, 0.9);
+            animation: glitch 0.5s infinite;
         }
 
-        .hero h1 {
-            font-size: 4rem;
-            letter-spacing: 5px;
-            color: var(--point-gold);
-            margin: 10px 0;
+        @keyframes glitch {
+            0% { text-shadow: 0.1em 0 0 rgba(255,0,255,.9), -0.1em -0.05em 0 rgba(0,255,255,.9); transform: translate(2px, 2px); }
+            20% { text-shadow: -0.1em -0.05em 0 rgba(255,0,255,.9), 0.05em 0.05em 0 rgba(0,255,255,.9); transform: translate(-2px, -2px); }
+            40% { text-shadow: 0.05em 0.1em 0 rgba(255,0,255,.9), 0.1em 0 0 rgba(0,255,255,.9); transform: translate(1px, -1px); }
+            60% { text-shadow: -0.1em 0 0 rgba(255,0,255,.9), 0.05em -0.1em 0 rgba(0,255,255,.9); transform: translate(-1px, 1px); }
+            80% { text-shadow: 0.1em -0.05em 0 rgba(255,0,255,.9), -0.05em 0.1em 0 rgba(0,255,255,.9); transform: translate(2px, -2px); }
+            100% { text-shadow: 0.05em 0.1em 0 rgba(255,0,255,.9), -0.1em -0.05em 0 rgba(0,255,255,.9); transform: translate(-2px, 2px); }
         }
 
-        /* 호랑이와 용 장식 */
-        .guardian {
-            position: absolute;
-            width: 400px;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-        .tiger { left: 5%; top: 20%; transform: rotate(-10deg); }
-        .dragon { right: 5%; bottom: 20%; transform: rotate(10deg); }
-
-        /* 검색 섹션 */
-        .search-container {
-            margin-top: 40px;
-            width: 80%;
-            max-width: 600px;
+        .hero-sub {
+            font-family: 'Megrim', cursive;
+            font-size: 2.5rem;
+            letter-spacing: 20px;
+            color: var(--secondary-glow);
+            text-shadow: 0 0 20px var(--secondary-glow);
+            margin-top: 50px;
+            animation: neonFlicker 1.5s infinite;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--point-gold);
-            color: white;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            outline: none;
+        @keyframes neonFlicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 20px var(--secondary-glow); }
+            20%, 22%, 24%, 55% { opacity: 0.4; text-shadow: none; }
         }
 
-        /* 콘텐츠 리스트 */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 100px 10% ;
-            background: #111;
+        /* --- 무한 텍스트 슬라이드 (더 화려하게) --- */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--tertiary-glow), var(--quaternary-glow));
+            padding: 25px 0;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
         }
 
-        .card {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 30px;
-            transition: 0.3s;
+        .marquee span {
+            display: inline-block;
+            font-family: 'Anton', sans-serif;
+            font-size: 3rem;
+            color: #000;
+            text-transform: uppercase;
+            animation: marquee 40s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* --- 메인 콘텐츠 섹션 (여백 축소) --- */
+        .content-section {
+            padding: 100px 10%; /* 여백 줄임 */
             position: relative;
         }
 
-        .card:hover {
-            border-color: var(--point-gold);
-            transform: translateY(-10px);
+        .section-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 80px;
+            background: linear-gradient(to right, #fff, var(--primary-glow), var(--tertiary-glow), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px var(--primary-glow));
         }
 
-        .card h3 { color: var(--point-gold); }
+        /* --- 3D 입체 카드 그리드 --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 40px;
+        }
 
-        footer {
-            text-align: center;
-            padding: 50px;
-            font-size: 0.9rem;
-            border-top: 1px solid #333;
+        .k-card-wrap {
+            perspective: 1000px;
+        }
+
+        .k-card {
+            position: relative;
+            height: 550px;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+        }
+
+        .k-card-wrap:hover .k-card {
+            box-shadow: 0 0 60px var(--primary-glow);
+            transform: rotateX(15deg) rotateY(-15deg); /* 더 과감하게 */
+        }
+
+        .k-card img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.9) contrast(1.2);
+            transition: transform 0.6s ease;
+        }
+
+        .k-card:hover img {
+            transform: scale(1.15) translateZ(30px);
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0; padding: 50px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95) 80%);
+            width: 100%;
+            transform: translateZ(60px);
+        }
+
+        .card-overlay h3 {
+            font-size: 3rem; margin: 0 0 15px 0;
+            font-family: 'Anton', sans-serif;
+            color: var(--secondary-glow);
+            text-shadow: 0 0 15px var(--secondary-glow);
+        }
+
+        .card-overlay p {
+            font-size: 1.2rem; line-height: 1.8; opacity: 0.9;
+        }
+
+        /* --- 스크롤 애니메이션 요소 --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1.2s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 미디어 쿼리 (반응형) --- */
+        @media (max-width: 1024px) {
+            .glitch { font-size: 18vw; }
+            .hero-sub { font-size: 1.8rem; letter-spacing: 10px; }
+            .section-title { font-size: 3.5rem; }
+            .k-card { height: 450px; }
         }
     </style>
 </head>
 <body>
 
-<div class="tradition-bg"></div>
-
-<section class="hero">
-    <div class="guardian tiger">🐅 </div>
-    <div class="guardian dragon">🐉 </div>
-
-    <div class="mystic-symbol">🔮</div>
-    <h1>천년의 꿈 해설소</h1>
-    <p>하늘의 기운과 땅의 지혜로 당신의 밤을 풀이합니다.</p>
-
-    <div class="search-container">
-        <input type="text" class="search-input" placeholder="어젯밤 꿈속의 단어를 입력하세요 (예: 호랑이, 황금, 바다)">
+    <div class="universe-bg">
+        <div class="stars-container" id="starsContainer"></div>
     </div>
-</section>
+    
+    <div class="floating-elements" id="floatingElements">
+        </div>
+    
+    <div class="cursor-follower" id="cursorFollower"></div>
 
-<main class="content-grid">
-    <div class="card">
-        <h3>🐯 맹수 태몽 해설</h3>
-        <p>호랑이가 집안으로 들어오거나 용이 승천하는 꿈은 장차 큰 인물이 될 아이를 상징합니다. 권세와 명예를 뜻하는 길몽 위주로 정리되어 있습니다.</p>
+    <header>
+        <h1 class="glitch" data-text="K-POP EXPLOSION">K-POP<br>EXPLOSION</h1>
+        <p class="hero-sub">VISUAL & AUDITORY OVERLOAD</p>
+    </header>
+
+    <div class="marquee">
+        <span>BTS BLACKPINK TWICE NEWJEANS SEVENTEEN STRAYKIDS ITZY IVE AESPA MONSTA X ATEEZ ENHYPEN LE SSERAFIM NMIXX STAYC TREASURE &nbsp; BTS BLACKPINK TWICE NEWJEANS SEVENTEEN STRAYKIDS ITZY IVE AESPA MONSTA X ATEEZ ENHYPEN LE SSERAFIM NMIXX STAYC TREASURE &nbsp;</span>
     </div>
-    <div class="card">
-        <h3>🐲 용과 승천의 비밀</h3>
-        <p>용은 최고의 권위를 상징합니다. 여의주를 물거나 비바람을 일으키는 꿈 등 상황별 108가지 해설을 확인하세요.</p>
-    </div>
-    <div class="card">
-        <h3>🌙 십장생 꿈풀이</h3>
-        <p>거북이, 소나무, 학 등이 등장하는 건강과 장수에 관한 꿈들을 전통적인 관점에서 깊이 있게 다룹니다.</p>
-    </div>
+
+    <main class="content-section">
+        <h2 class="section-title reveal">ULTIMATE ICONs</h2>
+        <div class="grid-container">
+            <div class="k-card-wrap reveal">
+                <div class="k-card">
+                    <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="K-POP Stage">
+                    <div class="card-overlay">
+                        <h3>STAGE<br>DOMINATION</h3>
+                        <p>Feel the explosive energy that conquers global arenas.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="k-card-wrap reveal">
+                <div class="k-card">
+                    <img src="https://images.unsplash.com/photo-1599818816815-5d4f3b7f14b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="K-POP Artist">
+                    <div class="card-overlay">
+                        <h3>HYPER<br>VISUALS</h3>
+                        <p>A breathtaking fusion of conceptual art and flawless aesthetics.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="k-card-wrap reveal">
+                <div class="k-card">
+                    <img src="https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="K-POP Dance">
+                    <div class="card-overlay">
+                        <h3>PERFECT<br>SYNC</h3>
+                        <p>Masterful choreography that creates a stunning visual narrative.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-<footer>
-    <p>&copy; 2026 천년의 꿈 해설소. All Rights Reserved.</p>
-    <p style="color: #666; margin-top: 10px;">
-        ※ 본 사이트의 정보는 틀릴 수 있고 변경될 수 있으므로, 정확한 정보는 반드시 공식 페이지나 전문가를 통해 재확인하시기 바랍니다.
-    </p>
-</footer>
+    <section class="content-section" style="background: rgba(0,0,0,0.7);">
+        <h2 class="section-title reveal" style="color: var(--tertiary-glow); text-shadow: 0 0 20px var(--tertiary-glow);">GLOBAL OVERLOAD</h2>
+        <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+            <div class="reveal" style="flex: 1; min-width: 300px; padding: 50px; background: rgba(255,255,255,0.08); border-radius: 30px; border: 2px solid rgba(255,255,255,0.15); box-shadow: 0 0 30px rgba(0,255,255,0.3);">
+                <p style="font-size: 1.4rem; line-height: 2.2; opacity: 0.95;">K-POP is a global phenomenon that has transcended music to become a cultural force. Breaking Billboard records, dominating world fashion weeks, and uniting millions, Korean artists are redefining the entertainment landscape. This is not just music; it's a movement affecting fashion, technology, language, and global fan culture on an unprecedented scale.</p>
+            </div>
+            <div class="reveal" style="flex: 1; min-width: 300px; height: 450px; border-radius: 30px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1);">
+                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="K-POP Crowd" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="reveal" style="text-align: center; border-top: 3px solid var(--primary-glow); padding-top: 100px; padding-bottom: 50px;">
+            <h2 class="glitch" style="font-size: 7vw; animation-duration: 1.5s;" data-text="INFINITE GALAXY">INFINITE<br>GALAXY</h2>
+            <p style="margin-top: 50px; font-size: 1.8rem; line-height: 1.6; max-width: 1000px; margin-left: auto; margin-right: auto;">The universe of K-POP is vast and ever-expanding. From deep fandom culture to global fashion trends, this portal is your gateway to everything Korean Pop. The journey has just begun. Keep exploring the infinite galaxy.</p>
+        </div>
+    </section>
+
+    <script>
+        // --- 마우스 포인터 팔로워 ---
+        const follower = document.getElementById('cursorFollower');
+        document.addEventListener('mousemove', (e) => {
+            follower.style.left = e.clientX + 'px';
+            follower.style.top = e.clientY + 'px';
+        });
+
+        // --- 스크롤 시 요소 나타나기 애니메이션 ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // 초기 실행
+
+        // --- 배경 요소 자동 생성 (빼곡하게) ---
+        const starsContainer = document.getElementById('starsContainer');
+        const floatingContainer = document.getElementById('floatingElements');
+
+        // 별 생성 (수백 개)
+        function createStars(count) {
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.setProperty('--opacity', Math.random() * 0.7 + 0.3);
+                star.style.setProperty('--duration', Math.random() * 5 + 3 + 's');
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 떠다니는 요소 생성 (아이콘, 이모티콘, 도형 - 상단 집중)
+        const elementTypes = [
+            { type: 'text', content: '💖', color: '#ff00ff' },
+            { type: 'text', content: '🔥', color: '#ff4500' },
+            { type: 'text', content: '✨', color: '#ffff00' },
+            { type: 'text', content: '🎤', color: '#ffffff' },
+            { type: 'text', content: '🎧', color: '#00ffff' },
+            { type: 'text', content: '🌟', color: '#ffff00' },
+            { type: 'icon', content: '★', color: '#ff00ff' }, // Codystar 폰트 활용
+            { type: 'shape', content: 'circle', color: 'rgba(0, 255, 255, 0.2)' },
+            { type: 'shape', content: 'triangle', color: 'rgba(255, 0, 255, 0.2)' },
+            { type: 'shape', content: 'square', color: 'rgba(255, 255, 0, 0.1)' }
+        ];
+
+        function createFloatingElements(count) {
+            for (let i = 0; i < count; i++) {
+                const elType = elementTypes[Math.floor(Math.random() * elementTypes.length)];
+                const el = document.createElement('div');
+                el.className = 'element';
+                
+                if (elType.type === 'text' || elType.type === 'icon') {
+                    el.textContent = elType.content;
+                    if (elType.type === 'icon') el.classList.add('icon');
+                } else {
+                    // 도형은 단순 사각형으로 크기와 테두리로 구분
+                    const size = Math.random() * 30 + 10 + 'px';
+                    el.style.width = size;
+                    el.style.height = size;
+                    el.style.backgroundColor = elType.color;
+                    if (elType.content === 'circle') el.style.borderRadius = '50%';
+                    if (elType.content === 'triangle') el.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+                    elType.color = 'transparent'; // 도형 자체 색상은 배경으로 처리
+                }
+
+                const sizeVal = elType.type === 'shape' ? '0px' : Math.random() * 3 + 1 + 'rem';
+                el.style.setProperty('--size', sizeVal);
+                el.style.setProperty('--color', elType.color);
+                el.style.setProperty('--opacity', Math.random() * 0.5 + 0.2);
+                el.style.setProperty('--duration', Math.random() * 10 + 5 + 's');
+                el.style.setProperty('--glow', Math.random() * 15 + 5 + 'px');
+                
+                // 위치 (상단 150vh 내에 집중)
+                el.style.top = Math.random() * 100 + '%';
+                el.style.left = Math.random() * 100 + '%';
+                
+                floatingContainer.appendChild(el);
+            }
+        }
+
+        // 요소 생성 실행 (엄청 많이)
+        createStars(500); // 별 500개
+        createFloatingElements(200); // 아이콘/도형 200개 (상단 집중)
+    </script>
 
 </body>
 </html>
