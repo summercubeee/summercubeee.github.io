@@ -57,18 +57,37 @@
             background: linear-gradient(to bottom, #fff, var(--butter-gold), var(--butter-deep));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
         }
+
+        /* 상단 구매 버튼 (주황색) */
+        .hero-buy-btn {
+            display: inline-block;
+            background: var(--buy-orange);
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 20px rgba(255, 107, 0, 0.3);
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .hero-buy-btn:hover { transform: scale(1.05); background: #ff8533; }
 
         /* --- 지도 구역 --- */
         .map-wrapper {
             position: relative;
             max-width: 800px;
             width: 100%;
-            margin: 30px 0;
+            margin: 20px 0;
             border: 2px solid var(--butter-gold);
             background: #000;
         }
-        .real-map { width: 100%; height: auto; display: block; opacity: 0.9; }
+        .real-map { width: 100%; height: auto; display: block; opacity: 0.85; }
 
         .marker {
             position: absolute;
@@ -78,11 +97,32 @@
             border: 3px solid var(--butter-deep);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 10px var(--butter-gold);
+            box-shadow: 0 0 12px var(--butter-gold);
             z-index: 10;
             transition: 0.3s;
         }
-        .marker:hover { transform: scale(1.3); background: var(--butter-gold); }
+        .marker:hover { transform: scale(1.4); background: var(--butter-gold); }
+
+        /* 지도 툴팁 (마우스 오버 시 상호명) */
+        .marker-tooltip {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--butter-gold);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            z-index: 20;
+        }
+        .marker:hover .marker-tooltip { opacity: 1; visibility: visible; bottom: 30px; }
 
         /* --- 카드 리스트 및 버튼 --- */
         .content-list {
@@ -97,7 +137,7 @@
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(251, 191, 36, 0.1);
             padding: 25px;
-            scroll-margin-top: 120px;
+            scroll-margin-top: 130px;
             transition: 0.4s;
         }
         .card:hover { border-color: var(--butter-gold); background: rgba(255,255,255,0.05); }
@@ -117,12 +157,14 @@
             font-weight: bold;
             text-align: center;
             transition: 0.3s;
+            cursor: pointer;
+            border: none;
         }
 
-        .btn-naver { border: 1px solid var(--naver-green); color: var(--naver-green); }
+        .btn-naver { border: 1px solid var(--naver-green); color: var(--naver-green); background: transparent; }
         .btn-naver:hover { background: var(--naver-green); color: #fff; }
 
-        .btn-buy { border: 1px solid var(--buy-orange); color: var(--buy-orange); }
+        .btn-buy { border: 1px solid var(--buy-orange); color: var(--buy-orange); background: transparent; }
         .btn-buy:hover { background: var(--buy-orange); color: #fff; }
 
         footer { padding: 50px; text-align: center; border-top: 1px solid #111; color: #555; font-size: 0.8rem; }
@@ -142,7 +184,8 @@
 
 <section class="hero">
     <h1 class="main-title">전국 버터떡 비기 전도</h1>
-    <p style="color:#888; margin-top:10px;">황금 포인트를 클릭하면 상세 정보로 이동합니다.</p>
+    
+    <button onclick="showCoupangPopup()" class="hero-buy-btn">🔥 인기 버터떡 구매하기</button>
 
     <div class="map-wrapper">
         <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png" class="real-map">
@@ -158,9 +201,6 @@
 </footer>
 
 <script>
-    // 네이버 지도 검색 URL 기본 베이스
-    const naverBase = "https://map.naver.com/v5/search/";
-
     const spots = [
         { id: 1, name: "서울 구름떡집", x: 44, y: 31, desc: "압구정 흑임자 버터 샌드 명소" },
         { id: 2, name: "서울 자연도소금빵", x: 41, y: 29, desc: "떡처럼 쫄깃한 소금버터빵" },
@@ -190,31 +230,36 @@
     const cardGrid = document.getElementById('card-grid');
 
     spots.forEach(s => {
+        // 지도 포인트 및 툴팁 생성
         const marker = document.createElement('div');
         marker.className = 'marker';
         marker.style.left = `${s.x}%`;
         marker.style.top = `${s.y}%`;
+        
+        // 툴팁 추가
+        marker.innerHTML = `<div class="marker-tooltip">${s.name}</div>`;
+        
         marker.onclick = () => document.getElementById(`spot-${s.id}`).scrollIntoView({ behavior: 'smooth' });
         pointContainer.appendChild(marker);
 
+        // 하단 카드 생성
         cardGrid.innerHTML += `
             <div class="card" id="spot-${s.id}">
                 <h3 style="color:var(--butter-gold); margin-bottom:10px;">${s.name}</h3>
                 <p style="font-size:0.85rem; color:#ccc; line-height:1.5;">${s.desc}</p>
                 <div class="button-group">
-                    <a href="${naverBase}${encodeURIComponent(s.name)}" target="_blank" class="btn btn-naver">📍 네이버 지도 확인</a>
-                    <a href="javascript:void(0)" onclick="showCoupangPopup()" class="btn btn-buy">🛒 인터넷 구매하기</a>
+                    <a href="https://map.naver.com/v5/search/${encodeURIComponent(s.name)}" target="_blank" class="btn btn-naver">📍 네이버 지도 확인</a>
+                    <button onclick="showCoupangPopup()" class="btn btn-buy">🛒 인터넷 구매하기</button>
                 </div>
             </div>
         `;
     });
 
-    // 팝업창 기능
     function showCoupangPopup() {
         alert("쿠팡을 여기다 걸면 됩니다");
     }
 
-    // 배경 애니메이션
+    // 배경 금가루 효과
     const canvas = document.getElementById('butter-dust');
     const ctx = canvas.getContext('2d');
     function init() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
