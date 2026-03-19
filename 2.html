@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전국 버터떡 비기 | 대백과 전도 & 구매가이드</title>
+    <title>전국 버터떡 비기 | 대백과 전도</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Song+Myung&display=swap');
 
@@ -11,7 +11,8 @@
             --butter-gold: #fbbf24;
             --butter-deep: #f59e0b;
             --bg-dark: #020617;
-            --coupang-orange: #ef4444;
+            --naver-green: #03c75a;
+            --buy-orange: #ff6b00;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,7 +25,7 @@
             scroll-behavior: smooth;
         }
 
-        /* --- 공정위 문구 (최상단) --- */
+        /* --- 상단 공정위 문구 --- */
         .ads-notice {
             background: #111;
             color: #777;
@@ -65,8 +66,9 @@
             width: 100%;
             margin: 30px 0;
             border: 2px solid var(--butter-gold);
+            background: #000;
         }
-        .real-map { width: 100%; height: auto; display: block; }
+        .real-map { width: 100%; height: auto; display: block; opacity: 0.9; }
 
         .marker {
             position: absolute;
@@ -78,45 +80,16 @@
             cursor: pointer;
             box-shadow: 0 0 10px var(--butter-gold);
             z-index: 10;
-        }
-
-        /* --- 버튼 공통 스타일 --- */
-        .buy-button {
-            display: inline-block;
-            background: var(--coupang-orange);
-            color: #fff;
-            padding: 12px 25px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin: 15px 0;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-        .buy-button:hover { transform: scale(1.05); background: #ff0000; }
-
-        .card-buy-btn {
-            display: block;
-            text-align: center;
-            background: transparent;
-            border: 1px solid var(--butter-gold);
-            color: var(--butter-gold);
-            padding: 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            margin-top: 15px;
-            font-size: 0.85rem;
             transition: 0.3s;
         }
-        .card-buy-btn:hover { background: var(--butter-gold); color: #000; }
+        .marker:hover { transform: scale(1.3); background: var(--butter-gold); }
 
-        /* --- 그리드 리스트 --- */
+        /* --- 카드 리스트 및 버튼 --- */
         .content-list {
             max-width: 1200px;
             margin: 40px auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
             padding: 0 20px;
         }
@@ -125,7 +98,32 @@
             border: 1px solid rgba(251, 191, 36, 0.1);
             padding: 25px;
             scroll-margin-top: 120px;
+            transition: 0.4s;
         }
+        .card:hover { border-color: var(--butter-gold); background: rgba(255,255,255,0.05); }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .btn-naver { border: 1px solid var(--naver-green); color: var(--naver-green); }
+        .btn-naver:hover { background: var(--naver-green); color: #fff; }
+
+        .btn-buy { border: 1px solid var(--buy-orange); color: var(--buy-orange); }
+        .btn-buy:hover { background: var(--buy-orange); color: #fff; }
 
         footer { padding: 50px; text-align: center; border-top: 1px solid #111; color: #555; font-size: 0.8rem; }
     </style>
@@ -139,13 +137,12 @@
 <canvas id="butter-dust"></canvas>
 
 <div class="official-notice">
-    전화번호, 주소, 일정, 금액 등은 변경될 수 있으므로 정확한 정보는 반드시 공식 페이지에서 재확인하십시오.
+    정확한 주소, 시간, 금액 등 정보는 변경될 수 있으므로 반드시 네이버 지도 등 공식 페이지에서 재확인하십시오.
 </div>
 
 <section class="hero">
     <h1 class="main-title">전국 버터떡 비기 전도</h1>
-    
-    <a href="https://link.coupang.com/a/d7C4Gk" target="_blank" class="buy-button">🔥 실시간 인기 버터떡 구매하기</a>
+    <p style="color:#888; margin-top:10px;">황금 포인트를 클릭하면 상세 정보로 이동합니다.</p>
 
     <div class="map-wrapper">
         <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png" class="real-map">
@@ -155,18 +152,17 @@
 
 <div class="content-list" id="card-grid"></div>
 
-<div style="text-align: center; padding: 40px 0;">
-    <a href="https://link.coupang.com/a/d7C4Gk" target="_blank" class="buy-button">황금 풍미 버터떡 보러가기</a>
-</div>
-
 <footer>
     <p>정보는 틀릴 수 있고 변경될 수 있으므로 공식 링크에서 다시 확인하세요.</p>
+    <p style="margin-top:10px;">&copy; 2026 전국 버터떡 명소 총합</p>
 </footer>
 
 <script>
-    const coupangLink = "https://link.coupang.com/a/d7C4Gk";
+    // 네이버 지도 검색 URL 기본 베이스
+    const naverBase = "https://map.naver.com/v5/search/";
+
     const spots = [
-        { id: 1, name: "서울 구름떡집", x: 44, y: 31, desc: "흑임자 버터 샌드 명소" },
+        { id: 1, name: "서울 구름떡집", x: 44, y: 31, desc: "압구정 흑임자 버터 샌드 명소" },
         { id: 2, name: "서울 자연도소금빵", x: 41, y: 29, desc: "떡처럼 쫄깃한 소금버터빵" },
         { id: 3, name: "서울 경기떡집", x: 46, y: 34, desc: "망원동 명물 이티떡" },
         { id: 4, name: "춘천 정남미명가", x: 55, y: 26, desc: "감자떡 식감의 감자빵" },
@@ -198,23 +194,27 @@
         marker.className = 'marker';
         marker.style.left = `${s.x}%`;
         marker.style.top = `${s.y}%`;
-        marker.onclick = () => {
-            const card = document.getElementById(`spot-${s.id}`);
-            card.scrollIntoView({ behavior: 'smooth' });
-        };
+        marker.onclick = () => document.getElementById(`spot-${s.id}`).scrollIntoView({ behavior: 'smooth' });
         pointContainer.appendChild(marker);
 
-        // 수정사항: 각 상호 하단에 '버터떡 인터넷 구매' 버튼 삽입
         cardGrid.innerHTML += `
             <div class="card" id="spot-${s.id}">
                 <h3 style="color:var(--butter-gold); margin-bottom:10px;">${s.name}</h3>
-                <p style="font-size:0.9rem; color:#ccc;">${s.desc}</p>
-                <a href="${coupangLink}" target="_blank" class="card-buy-btn">🛒 버터떡 인터넷 구매</a>
+                <p style="font-size:0.85rem; color:#ccc; line-height:1.5;">${s.desc}</p>
+                <div class="button-group">
+                    <a href="${naverBase}${encodeURIComponent(s.name)}" target="_blank" class="btn btn-naver">📍 네이버 지도 확인</a>
+                    <a href="javascript:void(0)" onclick="showCoupangPopup()" class="btn btn-buy">🛒 인터넷 구매하기</a>
+                </div>
             </div>
         `;
     });
 
-    // 배경 애니메이션 (단순화)
+    // 팝업창 기능
+    function showCoupangPopup() {
+        alert("쿠팡을 여기다 걸면 됩니다");
+    }
+
+    // 배경 애니메이션
     const canvas = document.getElementById('butter-dust');
     const ctx = canvas.getContext('2d');
     function init() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -222,10 +222,11 @@
     function draw() {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = '#fbbf24';
-        for(let i=0; i<50; i++) ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
+        for(let i=0; i<60; i++) ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
         requestAnimationFrame(draw);
     }
     draw();
+    window.addEventListener('resize', init);
 </script>
 </body>
 </html>
