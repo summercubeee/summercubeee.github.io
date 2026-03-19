@@ -1,570 +1,620 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<title>버터떡 전국 지도</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-    :root {
-        --butter-gold: #fbbf24;
-        --butter-deep: #f59e0b;
-        --bg-dark: #020617;
-        --accent-gold: #fbbf24;
-        --card-bg: #020617;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-        background: var(--bg-dark);
-        color:#fff;
-        font-family: system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif;
-        line-height:1.7;
-        word-break: keep-all;
-        overflow-x:hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전국 버터떡 대백과 | 대형 전도</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Song+Myung&display=swap');
 
-    .layout {
-        max-width: 1440px;
-        margin: 0 auto;
-        padding: 40px 16px 80px;
-    }
+        :root {
+            --butter-gold: #fbbf24;
+            --butter-deep: #f59e0b;
+            --bg-dark: #020617;
+            --naver-green: #03c75a;
+        }
 
-    h1 {
-        font-size: clamp(2.4rem, 4vw, 3.2rem);
-        margin-bottom: 10px;
-    }
-    .subtitle {
-        color:#9ca3af;
-        margin-bottom: 24px;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Noto Serif KR', serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
 
-    /* 지도 영역 */
-    .map-wrap {
-        position: relative;
-        display:flex;
-        gap:32px;
-        flex-wrap:wrap;
-        align-items:flex-start;
-    }
-    .map-container {
-        position: relative;
-        flex:1 1 420px;
-        min-width:320px;
-        aspect-ratio: 0.8;
-        border:2px double rgba(251,191,36,0.4);
-        background: radial-gradient(circle at top, rgba(250,204,21,0.08), transparent 55%);
-        padding:16px;
-        overflow:hidden;
-    }
-    .korea-svg {
-        width:100%;
-        height:100%;
-        filter: drop-shadow(0 0 18px rgba(250,204,21,0.45));
-    }
-    .region-path {
-        fill: url(#goldGradient);
-        stroke:#facc15;
-        stroke-width:0.4;
-        cursor:pointer;
-        transition:0.3s ease;
-    }
-    .region-path:hover,
-    .region-path.active-region {
-        fill:#fff;
-        filter: drop-shadow(0 0 30px rgba(250,204,21,0.9));
-    }
-    .region-label {
-        pointer-events:none;
-        font-size:4px;
-        fill:#020617;
-        font-weight:bold;
-    }
+        .official-notice {
+            background: var(--butter-deep);
+            color: #000;
+            padding: 12px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    /* 지도 위 포인트 */
-    .map-points-layer {
-        position:absolute;
-        inset:16px;
-        pointer-events:none;
-    }
-    .map-point {
-        position:absolute;
-        width:13px;
-        height:13px;
-        border-radius:50%;
-        background:rgba(251,191,36,0.9);
-        border:2px solid #fff;
-        box-shadow:0 0 18px rgba(250,204,21,0.9);
-        transform:translate(-50%, -50%);
-        cursor:pointer;
-        pointer-events:auto;
-        transition:transform .25s, background .25s, box-shadow .25s;
-        z-index:5;
-    }
-    .map-point:hover {
-        transform:translate(-50%, -50%) scale(1.5);
-        background:#fff;
-        box-shadow:0 0 30px rgba(250,204,21,1);
-    }
-    .map-point .point-tooltip {
-        position:absolute;
-        left:50%;
-        bottom:18px;
-        transform:translateX(-50%);
-        background:rgba(15,23,42,0.95);
-        border:1px solid rgba(250,204,21,0.7);
-        border-radius:4px;
-        padding:6px 9px;
-        font-size:11px;
-        white-space:nowrap;
-        opacity:0;
-        visibility:hidden;
-        transition:.2s;
-        pointer-events:none;
-        color:#e5e7eb;
-    }
-    .map-point:hover .point-tooltip {
-        opacity:1;
-        visibility:visible;
-        bottom:22px;
-    }
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
 
-    /* 지도 우측 팝업 */
-    .map-popup {
-        flex:0 1 320px;
-        min-width:280px;
-        background:rgba(15,23,42,0.9);
-        border-radius:10px;
-        border:1px solid rgba(148,163,184,0.5);
-        padding:20px;
-        box-shadow:0 18px 50px rgba(0,0,0,0.5);
-        transform-origin: top right;
-        transform: scale(0.96) translateY(10px);
-        opacity:0;
-        pointer-events:none;
-        transition:.25s ease;
-    }
-    .map-popup.visible {
-        opacity:1;
-        pointer-events:auto;
-        transform: scale(1) translateY(0);
-    }
-    .map-popup-title {
-        font-size:1.1rem;
-        margin-bottom:6px;
-    }
-    .map-popup-region {
-        font-size:0.85rem;
-        color:#facc15;
-        margin-bottom:12px;
-    }
-    .map-popup-desc {
-        font-size:0.9rem;
-        color:#cbd5e1;
-        margin-bottom:16px;
-    }
-    .map-popup-buttons {
-        display:flex;
-        gap:10px;
-        flex-wrap:wrap;
-    }
-    .btn {
-        flex:1;
-        border-radius:999px;
-        padding:9px 14px;
-        font-size:0.9rem;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:6px;
-        cursor:pointer;
-        border:1px solid transparent;
-        transition:.2s;
-        text-decoration:none;
-    }
-    .btn-outline {
-        background:transparent;
-        color:#facc15;
-        border-color:#facc15;
-    }
-    .btn-outline:hover {
-        background:#facc15;
-        color:#111827;
-    }
-    .btn-solid {
-        background:var(--butter-deep);
-        color:#111827;
-    }
-    .btn-solid:hover {
-        background:#fff;
-    }
+        header h1 {
+            font-family: 'Song Myung';
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            color: var(--butter-gold);
+        }
 
-    /* 하단 카드 영역 */
-    .list-wrap {
-        margin-top:56px;
-    }
-    .list-header {
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-end;
-        gap:16px;
-        margin-bottom:18px;
-        flex-wrap:wrap;
-    }
-    .list-header h2 {
-        font-size:1.4rem;
-    }
-    .current-filter {
-        font-size:0.85rem;
-        color:#e5e7eb;
-    }
-    .reset-btn {
-        border-radius:999px;
-        border:1px solid rgba(148,163,184,0.7);
-        background:transparent;
-        color:#e5e7eb;
-        padding:4px 10px;
-        font-size:0.8rem;
-        cursor:pointer;
-    }
-    .reset-btn:hover {
-        background:#facc15;
-        color:#111827;
-    }
+        header p {
+            color:#9ca3af;
+            font-size:0.95rem;
+            margin-top:10px;
+        }
 
-    .card-grid {
-        display:grid;
-        grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-        gap:20px;
-    }
-    .spot-card {
-        background:var(--card-bg);
-        border-radius:10px;
-        border:1px solid rgba(30,64,175,0.5);
-        padding:18px 18px 16px;
-        transition:.3s;
-        cursor:pointer;
-        position:relative;
-        overflow:hidden;
-    }
-    .spot-card::before {
-        content:"";
-        position:absolute;
-        inset:0;
-        background:radial-gradient(circle at top left, rgba(250,204,21,0.18), transparent 55%);
-        opacity:0;
-        transition:.4s;
-        pointer-events:none;
-    }
-    .spot-card.expanded::before {
-        opacity:1;
-    }
-    .spot-card.hidden {
-        display:none;
-    }
-    .spot-card-head {
-        font-size:0.8rem;
-        color:#facc15;
-        letter-spacing:2px;
-        text-transform:uppercase;
-        margin-bottom:6px;
-    }
-    .spot-card-title {
-        font-size:1.1rem;
-        margin-bottom:6px;
-    }
-    .spot-card-desc {
-        font-size:0.9rem;
-        color:#cbd5e1;
-        max-height:3.2em;
-        overflow:hidden;
-        margin-bottom:10px;
-    }
-    .spot-card-extra {
-        max-height:0;
-        overflow:hidden;
-        transition:max-height .3s ease;
-    }
-    .spot-card.expanded .spot-card-extra {
-        max-height:200px;
-    }
-    .spot-card-actions {
-        margin-top:10px;
-        display:flex;
-        gap:8px;
-        flex-wrap:wrap;
-    }
+        /* 지도 영역 */
+        .map-fullscreen-section {
+            position: relative;
+            width: 100vw;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 24px;
+            overflow: hidden;
+        }
 
-    .badge-region {
-        display:inline-flex;
-        align-items:center;
-        gap:6px;
-        font-size:0.78rem;
-        color:#9ca3af;
-    }
+        .map-layout {
+            width: 100%;
+            max-width: 1200px;
+            display:flex;
+            gap:24px;
+            padding:0 16px;
+            flex-wrap:wrap;
+        }
 
-    @media (max-width: 768px) {
-        .map-wrap { flex-direction:column; }
-        .map-popup { order:2; width:100%; }
-        .map-container { order:1; }
-    }
-</style>
+        .map-container {
+            position: relative;
+            flex:1 1 620px;
+            min-width:320px;
+        }
+
+        .real-map-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0.95;
+        }
+
+        #points-container {
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+        }
+
+        .marker {
+            position: absolute;
+            width: clamp(12px, 2vw, 20px);
+            height: clamp(12px, 2vw, 20px);
+            background: #fff;
+            border: 3px solid var(--butter-deep);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--butter-gold);
+            z-index: 10;
+            transition: 0.25s ease;
+            transform: translate(-50%, -50%);
+            pointer-events:auto;
+        }
+
+        .marker:hover {
+            transform: translate(-50%, -50%) scale(1.4);
+            background: var(--butter-gold);
+        }
+
+        .marker .tooltip {
+            position: absolute;
+            bottom: 140%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            border: 1px solid var(--butter-gold);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            color:#e5e7eb;
+        }
+        .marker:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 150%;
+        }
+
+        /* 지도 옆 팝업 */
+        .map-popup {
+            flex:0 1 320px;
+            min-width:280px;
+            align-self:flex-start;
+            background: rgba(15,23,42,0.92);
+            border-radius: 10px;
+            border: 1px solid rgba(148,163,184,0.6);
+            padding: 18px 16px 16px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+            transform-origin: top right;
+            transform: scale(0.96) translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s ease;
+        }
+
+        .map-popup.visible {
+            opacity: 1;
+            pointer-events:auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .map-popup-region {
+            font-size:0.85rem;
+            color: var(--butter-gold);
+            letter-spacing:2px;
+            text-transform:uppercase;
+            margin-bottom:6px;
+        }
+
+        .map-popup-title {
+            font-size:1.1rem;
+            margin-bottom:6px;
+        }
+
+        .map-popup-desc {
+            font-size:0.9rem;
+            color:#cbd5e1;
+            margin-bottom:14px;
+        }
+
+        .map-popup-buttons {
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .btn {
+            flex:1;
+            border-radius:999px;
+            padding:8px 12px;
+            font-size:0.85rem;
+            cursor:pointer;
+            border:1px solid transparent;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:6px;
+            text-decoration:none;
+            transition:.2s;
+        }
+        .btn-outline {
+            background:transparent;
+            color:var(--butter-gold);
+            border-color:var(--butter-gold);
+        }
+        .btn-outline:hover {
+            background:var(--butter-gold);
+            color:#111827;
+        }
+        .btn-solid {
+            background:var(--butter-deep);
+            color:#111827;
+        }
+        .btn-solid:hover {
+            background:#fff;
+        }
+
+        /* 쇼핑 배너 */
+        .shopping-banner {
+            max-width: 1000px;
+            margin: 40px auto 30px;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, #020617, #0f172a);
+            border: 1px solid var(--butter-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            gap:16px;
+        }
+
+        .shop-btn {
+            background: var(--butter-deep);
+            color: #000;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            border-radius:999px;
+            font-size:0.9rem;
+        }
+        .shop-btn:hover { background:#fff; }
+
+        /* 카드 리스트 */
+        .grid-wrap {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 20px;
+        }
+
+        .grid-header {
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-bottom:16px;
+        }
+
+        .grid-header h2 {
+            font-size:1.3rem;
+        }
+
+        .current-filter {
+            font-size:0.8rem;
+            color:#e5e7eb;
+        }
+
+        .btn-reset {
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,0.8);
+            background:transparent;
+            color:#e5e7eb;
+            font-size:0.8rem;
+            padding:4px 10px;
+            cursor:pointer;
+        }
+        .btn-reset:hover {
+            background:var(--butter-gold);
+            color:#111827;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(251, 191, 36, 0.18);
+            padding: 18px 18px 14px;
+            transition: 0.3s;
+            border-radius:10px;
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .card::before {
+            content:"";
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+            background: radial-gradient(circle at top left, rgba(251,191,36,0.18), transparent 55%);
+            opacity:0;
+            transition:.35s;
+        }
+
+        .card.expanded::before {
+            opacity:1;
+        }
+
+        .card.hidden { display:none; }
+
+        .card-region {
+            font-size:0.78rem;
+            color:var(--butter-gold);
+            letter-spacing:2px;
+            text-transform:uppercase;
+            margin-bottom:6px;
+        }
+
+        .card h3 {
+            color:var(--butter-gold);
+            margin-bottom:6px;
+            font-size:1.05rem;
+        }
+
+        .card p {
+            font-size:0.85rem;
+            color:#9ca3af;
+            margin-bottom:8px;
+        }
+
+        .card-extra {
+            max-height:0;
+            overflow:hidden;
+            transition:max-height .3s ease;
+        }
+        .card.expanded .card-extra {
+            max-height:160px;
+        }
+
+        .card-actions {
+            display:flex;
+            gap:6px;
+            flex-wrap:wrap;
+            margin-top:8px;
+        }
+
+        .btn-naver {
+            flex:1;
+            border-radius:999px;
+            border:1px solid var(--naver-green);
+            color: var(--naver-green);
+            padding:7px 10px;
+            text-align:center;
+            text-decoration:none;
+            font-size:0.8rem;
+            font-weight:bold;
+            background:transparent;
+            transition:.2s;
+        }
+        .btn-naver:hover {
+            background: var(--naver-green);
+            color:#fff;
+        }
+
+        .btn-buy-small {
+            flex:1;
+            border-radius:999px;
+            border:1px solid var(--butter-deep);
+            background: var(--butter-deep);
+            color:#111827;
+            font-size:0.8rem;
+            font-weight:bold;
+            padding:7px 10px;
+            cursor:pointer;
+            transition:.2s;
+        }
+        .btn-buy-small:hover { background:#fff; }
+
+        #btn-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 46px;
+            height: 46px;
+            background: var(--butter-gold);
+            border: none;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            font-size:0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .map-layout { flex-direction:column; }
+            .map-popup { order:-1; width:100%; }
+            .shopping-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="layout">
-    <header>
-        <h1>황금 버터떡 실측 지도</h1>
-        <p class="subtitle">
-            사진 기반 커스텀 한국 지도 위에 실제 버터떡 명소를 박아서, 지역별로 한 번에 내려다보는 버터떡 아틀라스입니다.
-        </p>
-    </header>
 
-    <!-- 상단: 지도 + 지역 팝업 -->
-    <section class="map-wrap">
-        <div class="map-container">
-            <!-- ① 여기 SVG를 "사진에서 트레이싱한 커스텀 지도"로 교체하면 됨 -->
-            <svg class="korea-svg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%"  style="stop-color:#fff7ad;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-
-                <!-- ★ TODO: 실제 사진 기반 커스텀 실루엣으로 path들을 교체 -->
-                <!-- 여기서는 서울/경기/부산 등 최소한만 구획을 나눈 단순 버전 예시 -->
-
-                <!-- 서울 -->
-                <path class="region-path" data-region="seoul"
-                      d="M90 60 L105 60 L108 68 L100 75 L90 70 Z" />
-                <text x="95" y="66" class="region-label">서울</text>
-
-                <!-- 경기 -->
-                <path class="region-path" data-region="gyeonggi"
-                      d="M75 50 L120 50 L128 68 L118 85 L90 85 L72 72 Z" />
-                <text x="78" y="58" class="region-label">경기</text>
-
-                <!-- 인천 -->
-                <path class="region-path" data-region="incheon"
-                      d="M68 55 L75 50 L72 72 L62 74 Z" />
-                <text x="64" y="63" class="region-label">인천</text>
-
-                <!-- 부산 -->
-                <path class="region-path" data-region="busan"
-                      d="M120 170 L132 170 L136 182 L125 192 L115 184 Z" />
-                <text x="120" y="177" class="region-label">부산</text>
-
-                <!-- 제주는 아래쪽에 -->
-                <path class="region-path" data-region="jeju"
-                      d="M78 215 Q100 210 122 215 Q100 220 78 215 Z" />
-                <text x="95" y="214" class="region-label">제주</text>
-            </svg>
-
-            <!-- 포인트 레이어 -->
-            <div class="map-points-layer" id="map-points-layer"></div>
-        </div>
-
-        <!-- 지역 팝업 -->
-        <aside class="map-popup" id="map-popup">
-            <div class="map-popup-region" id="popup-region-label">지역 선택 대기</div>
-            <div class="map-popup-title" id="popup-title">지도를 클릭해 주세요</div>
-            <p class="map-popup-desc" id="popup-desc">
-                서울, 경기, 부산 등 특정 지역을 클릭하면 해당 권역의 버터떡 성지 목록과
-                바로 탐색/구매 버튼이 이 박스에 나타납니다.
-            </p>
-            <div class="map-popup-buttons" id="popup-buttons">
-                <!-- JS에서 버튼 2개를 넣어줌 -->
-            </div>
-        </aside>
-    </section>
-
-    <!-- 하단: 카드 리스트 -->
-    <section class="list-wrap">
-        <div class="list-header">
-            <div>
-                <h2>전국 버터떡 명소 카드</h2>
-                <div class="badge-region">
-                    현재 필터:
-                    <span id="current-filter">전체</span>
-                </div>
-            </div>
-            <button class="reset-btn" type="button" onclick="clearRegionFilter()">전체 보기</button>
-        </div>
-
-        <div class="card-grid" id="card-grid"></div>
-    </section>
+<div class="official-notice">
+    정확한 주소, 시간, 금액 정보는 변경될 수 있으므로 반드시 네이버 지도 등 공식 페이지에서 재확인하십시오.
 </div>
 
-<script>
-/*
-    spots: 실제 명소 데이터
-    region: seoul / gyeonggi / busan / jeju 등
-    x, y: 지도 박스 내 퍼센트 좌표 (0~100)
-*/
-const spots = [
-    // 서울·경기 예시
-    { id: 1, region: 'seoul',   name: '새들러하우스',      loc: '서울 강남구 신사동', desc: '상하이식 버터 쫀득떡, 플레인·초코·치즈까지 라인업 완비.', x: 52, y: 54 },
-    { id: 2, region: 'seoul',   name: '이웃집통통이',      loc: '서울 강남구 선릉로', desc: '글루텐 프리 스타일 버터떡으로 이름난 집.', x: 50, y: 57 },
-    { id: 3, region: 'seoul',   name: '하우스엠',          loc: '서울 강남구 논현동', desc: '하트 모양 버터떡, 겉바속쫀의 끝판왕.', x: 54, y: 59 },
-    { id: 4, region: 'gyeonggi',name: '하츠베이커리 성수', loc: '서울 성동구 성수동', desc: '왕버터떡으로 유명한 성수 디저트 스팟.', x: 58, y: 52 },
-    // 부산 예시
-    { id: 5, region: 'busan',   name: '희와제과',          loc: '부산 진구',         desc: '버터 팥 크림과 떡 식감이 결합된 인기 메뉴.', x: 78, y: 80 },
-    { id: 6, region: 'busan',   name: '명가떡집 전포',      loc: '부산 전포동',       desc: '앙버터 설기로 유명한 떡집.', x: 82, y: 83 },
-    // 제주 예시
-    { id: 7, region: 'jeju',    name: '오메기떡 명소',      loc: '제주 제주시',       desc: '오메기떡과 버터 크림을 조합한 제주 감성.', x: 60, y: 93 },
-    { id: 8, region: 'jeju',    name: '아베베 베이커리',    loc: '제주 애월',         desc: '제주 재료와 버터 떡·도넛을 함께 즐길 수 있는 곳.', x: 66, y: 96 }
-    // 여기에 계속 추가하면 됨
-];
+<header>
+    <h1>전국 버터떡 대백과 전도</h1>
+    <p>실제 지도를 바탕으로 주요 버터떡 명소를 정교하게 박아 넣은 인터랙티브 아틀라스입니다.</p>
+</header>
 
-const regionLabelMap = {
-    seoul: '서울',
-    gyeonggi: '경기',
-    incheon: '인천',
-    busan: '부산',
-    jeju: '제주'
-};
+<section class="map-fullscreen-section">
+    <div class="map-layout">
+        <div class="map-container">
+            <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png"
+                 class="real-map-img" alt="대한민국 실측 지도">
 
-const mapPointsLayer = document.getElementById('map-points-layer');
-const cardGrid = document.getElementById('card-grid');
-const popupEl = document.getElementById('map-popup');
-const popupRegionLabel = document.getElementById('popup-region-label');
-const popupTitle = document.getElementById('popup-title');
-const popupDesc = document.getElementById('popup-desc');
-const popupButtons = document.getElementById('popup-buttons');
-const currentFilterEl = document.getElementById('current-filter');
-
-/* 1) 지도 위 포인트 + 하단 카드 생성 */
-spots.forEach(spot => {
-    // 지도 포인트
-    const point = document.createElement('div');
-    point.className = 'map-point';
-    point.style.left = `${spot.x}%`;
-    point.style.top = `${spot.y}%`;
-    point.dataset.id = spot.id;
-    point.dataset.region = spot.region;
-    point.innerHTML = `
-        <div class="point-tooltip">${spot.name}<br/><span style="color:#9ca3af;font-size:11px;">${spot.loc}</span></div>
-    `;
-    point.addEventListener('click', () => {
-        // 포인트 클릭 → 해당 카드 확장 + 스크롤
-        selectCardById(spot.id);
-    });
-    mapPointsLayer.appendChild(point);
-
-    // 카드
-    const card = document.createElement('article');
-    card.className = 'spot-card';
-    card.id = `card-${spot.id}`;
-    card.dataset.region = spot.region;
-    card.innerHTML = `
-        <div class="spot-card-head">${regionLabelMap[spot.region] || spot.region}</div>
-        <div class="spot-card-title">${spot.name}</div>
-        <div class="spot-card-desc">${spot.desc}</div>
-        <div class="spot-card-extra">
-            <div style="font-size:0.85rem; color:#e5e7eb; margin-bottom:8px;">
-                📍 ${spot.loc}
-            </div>
-            <div class="spot-card-actions">
-                <a href="https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}"
-                   class="btn btn-outline" target="_blank">
-                    지도에서 탐색하기
-                </a>
-                <button type="button" class="btn btn-solid"
-                        onclick="openShopFor('${spot.name.replace(/'/g, "\\'")}');event.stopPropagation();">
-                    인터넷 쇼핑몰에서 구매하기
-                </button>
-            </div>
+            <div id="points-container"></div>
         </div>
-    `;
-    card.addEventListener('click', () => {
-        toggleCardExpand(card.id);
-    });
-    cardGrid.appendChild(card);
-});
 
-/* 2) 카드 확장 애니메이션 */
-function toggleCardExpand(cardId) {
-    const card = document.getElementById(cardId);
-    const isExpanded = card.classList.contains('expanded');
-    document.querySelectorAll('.spot-card.expanded').forEach(c => c.classList.remove('expanded'));
-    if (!isExpanded) {
+        <aside class="map-popup" id="map-popup">
+            <div class="map-popup-region" id="popup-region">지역 선택 대기</div>
+            <div class="map-popup-title" id="popup-title">지도 위의 점을 클릭해 주세요</div>
+            <p class="map-popup-desc" id="popup-desc">
+                특정 버터떡 명소를 누르면 이곳에 간단한 설명과 함께
+                지도에서 바로 탐색 / 인터넷 구매 버튼이 나타납니다.
+            </p>
+            <div class="map-popup-buttons" id="popup-buttons">
+                <!-- JS에서 버튼 2개 삽입 -->
+            </div>
+        </aside>
+    </div>
+</section>
+
+<div class="shopping-banner">
+    <div>
+        <h2 style="color:var(--butter-gold); margin-bottom:5px;">장인의 버터떡 쇼핑하기</h2>
+        <p style="color:#888; font-size:0.9rem;">클릭하시면 엄선된 버터떡 전문 쇼핑몰 검색 페이지로 연결됩니다.</p>
+    </div>
+    <button onclick="openGlobalShop()" class="shop-btn">전국 버터떡 쇼핑 검색 〉</button>
+</div>
+
+<div class="grid-wrap">
+    <div class="grid-header">
+        <div>
+            <h2>버터떡 명소 카드 리스트</h2>
+            <div class="current-filter">현재 선택: <span id="current-filter-label">전체</span></div>
+        </div>
+        <button class="btn-reset" type="button" onclick="resetSelection()">선택 해제</button>
+    </div>
+
+    <div class="card-grid" id="card-grid"></div>
+</div>
+
+<button id="btn-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">TOP</button>
+
+<footer style="padding: 40px; text-align: center; color: #444; font-size: 0.8rem;">
+    <p>정보는 틀릴 수 있고 변경될 수 있으므로 공식 링크에서 다시 확인하세요. &copy; 2026</p>
+</footer>
+
+<script>
+    // 실제 명소 목록 (지역, 상호명, 설명, 지도 이미지 기준 x,y 퍼센트 좌표)
+    const spots = [
+        { id:1, region:'서울', name:"새들러하우스",    loc:"서울 강남구 신사동",    desc:"상하이식 버터 쫀득떡, 플레인·초코·치즈 라인업.", x:44.5, y:31.0 },
+        { id:2, region:'서울', name:"하우스엠",        loc:"서울 강남구 논현동",    desc:"하트 모양 겉바속쫀 버터떡으로 유명한 카페.", x:46.0, y:32.0 },
+        { id:3, region:'서울', name:"이웃집통통이",    loc:"서울 강남구 선릉로",    desc:"글루텐 프리 스타일 버터떡.", x:45.0, y:29.5 },
+        { id:4, region:'서울', name:"카페 이오이",      loc:"서울 마포구 대흥동",    desc:"하트 모양 가성비 버터떡.", x:42.0, y:30.5 },
+
+        { id:5, region:'인천', name:"수제과점",        loc:"인천 미추홀구",        desc:"상하이 버터떡 전문 인천 핫플.", x:38.0, y:32.5 },
+
+        { id:6, region:'경기', name:"오브더밀",        loc:"경기 안성시",          desc:"안성 상하이 버터떡 맛집.", x:48.0, y:45.0 },
+        { id:7, region:'경기', name:"비에델",          loc:"경기 평택시 고덕",      desc:"평택 고덕 버터떡으로 언급되는 베이커리.", x:45.0, y:48.0 },
+
+        { id:8, region:'강원', name:"춘천 감자밭",     loc:"강원 춘천시",          desc:"치즈 버터 감자떡 개념의 퓨전 간식.", x:58.0, y:24.0 },
+        { id:9, region:'강원', name:"정선 수리취떡",   loc:"강원 정선군",          desc:"수리취 버터 와플 떡.", x:65.0, y:32.0 },
+
+        { id:10, region:'충북', name:"청주 본정",      loc:"충북 청주시",          desc:"버터 크림 떡 케이크 계열.", x:52.0, y:48.0 },
+        { id:11, region:'충남', name:"공주 부자떡집",  loc:"충남 공주시",          desc:"알밤 버터 찹쌀떡.", x:43.0, y:55.0 },
+        { id:12, region:'대전', name:"성심당",         loc:"대전 서구",            desc:"성심당 기술력이 담긴 퓨전 버터 떡.", x:49.0, y:58.0 },
+
+        { id:13, region:'전북', name:"전주 교동떡갈비",loc:"전북 전주시",          desc:"한옥마을 구워먹는 버터 치즈떡.", x:41.0, y:70.0 },
+        { id:14, region:'전북', name:"익산 농협 떡방", loc:"전북 익산시",          desc:"생크림 찹쌀떡 대란템.", x:44.0, y:65.0 },
+
+        { id:15, region:'광주', name:"광주 버터떡 카페",loc:"광주광역시",          desc:"지역 버터떡 핫플 묶음 대표 상호.", x:39.0, y:78.0 },
+        { id:16, region:'전남', name:"영광 민속떡집",  loc:"전남 영광군",          desc:"모시 버터 크림떡.", x:32.0, y:82.0 },
+
+        { id:17, region:'경북', name:"안동 버선버선",  loc:"경북 안동시",          desc:"종가집 손맛 버터 풍미 떡.", x:68.0, y:48.0 },
+        { id:18, region:'경북', name:"황남빵(퓨전)",   loc:"경북 경주시",          desc:"황남동 일대 버터 앙금 계열.", x:74.0, y:65.0 },
+        { id:19, region:'대구', name:"대구 버터떡집",  loc:"대구 중구",            desc:"대구 상하이 버터떡 컨셉 카페.", x:67.0, y:62.0 },
+
+        { id:20, region:'경남', name:"의령 망개떡 변주",loc:"경남 의령군",          desc:"유제품 향이 가미된 망개떡 스타일.", x:58.0, y:75.0 },
+
+        { id:21, region:'부산', name:"희와제과",       loc:"부산 진구",            desc:"버터 팥 크림 떡빵.", x:72.0, y:82.0 },
+
+        { id:22, region:'제주', name:"아베베 베이커리", loc:"제주 제주시",          desc:"제주 재료와 버터 떡·도넛.", x:38.0, y:94.0 }
+    ];
+
+    const pointContainer = document.getElementById('points-container');
+    const cardGrid = document.getElementById('card-grid');
+    const popup = document.getElementById('map-popup');
+    const popupRegion = document.getElementById('popup-region');
+    const popupTitle = document.getElementById('popup-title');
+    const popupDesc = document.getElementById('popup-desc');
+    const popupButtons = document.getElementById('popup-buttons');
+    const currentFilterLabel = document.getElementById('current-filter-label');
+
+    // 카드 DOM 생성
+    spots.forEach(spot => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.id = `card-${spot.id}`;
+        card.dataset.region = spot.region;
+        card.innerHTML = `
+            <div class="card-region">${spot.region}</div>
+            <h3>${spot.name}</h3>
+            <p>${spot.desc}</p>
+            <div class="card-extra">
+                <p>📍 ${spot.loc}</p>
+                <div class="card-actions">
+                    <a class="btn-naver"
+                       href="https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}"
+                       target="_blank">
+                        네이버 지도에서 탐색하기
+                    </a>
+                    <button class="btn-buy-small"
+                            onclick="openShopFor('${spot.name.replace(/'/g,"\\'")}'); event.stopPropagation();">
+                        인터넷쇼핑몰에서 구매하기
+                    </button>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => toggleCard(card.id));
+        cardGrid.appendChild(card);
+    });
+
+    // 지도 포인트 생성
+    spots.forEach(spot => {
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = `${spot.x}%`;
+        marker.style.top = `${spot.y}%`;
+        marker.dataset.id = spot.id;
+        marker.dataset.region = spot.region;
+        marker.innerHTML = `<div class="tooltip">${spot.name}<br/><span style="color:#9ca3af;font-size:11px;">${spot.loc}</span></div>`;
+        marker.onclick = () => handleMarkerClick(spot);
+        pointContainer.appendChild(marker);
+    });
+
+    function handleMarkerClick(spot) {
+        // 팝업 업데이트
+        popupRegion.textContent = spot.region;
+        popupTitle.textContent = spot.name;
+        popupDesc.textContent = spot.desc + " " + spot.loc + " 일대에 위치한 버터떡 명소입니다.";
+        popupButtons.innerHTML = "";
+
+        const btnMap = document.createElement('a');
+        btnMap.className = 'btn btn-outline';
+        btnMap.href = "https://map.naver.com/v5/search/" + encodeURIComponent(spot.name);
+        btnMap.target = "_blank";
+        btnMap.textContent = "지도에서 탐색하기";
+
+        const btnShop = document.createElement('button');
+        btnShop.type = "button";
+        btnShop.className = 'btn btn-solid';
+        btnShop.textContent = "인터넷구매하기";
+        btnShop.onclick = () => openShopFor(spot.name);
+
+        popupButtons.appendChild(btnMap);
+        popupButtons.appendChild(btnShop);
+        popup.classList.add('visible');
+
+        // 하단 카드 확장 + 스크롤
+        selectCard(spot.id);
+        currentFilterLabel.textContent = `${spot.region} · ${spot.name}`;
+    }
+
+    function toggleCard(cardId) {
+        const card = document.getElementById(cardId);
+        const expanded = card.classList.contains('expanded');
+        document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
+        if (!expanded) {
+            card.classList.add('expanded');
+            card.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
+    }
+
+    function selectCard(id) {
+        const card = document.getElementById(`card-${id}`);
+        if (!card) return;
+        document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
         card.classList.add('expanded');
         card.scrollIntoView({ behavior:'smooth', block:'center' });
     }
-}
 
-function selectCardById(id) {
-    const card = document.getElementById(`card-${id}`);
-    if (!card) return;
-    document.querySelectorAll('.spot-card.expanded').forEach(c => c.classList.remove('expanded'));
-    card.classList.add('expanded');
-    card.scrollIntoView({ behavior:'smooth', block:'center' });
-}
+    function resetSelection() {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded','hidden'));
+        document.querySelectorAll('.marker').forEach(m => m.style.display = 'block');
+        popup.classList.remove('visible');
+        currentFilterLabel.textContent = '전체';
+    }
 
-/* 3) 지도 영역 클릭 → 팝업(버튼 2개) 업데이트 + 카드 필터 */
-document.querySelectorAll('.region-path').forEach(path => {
-    path.addEventListener('click', () => {
-        const regionKey = path.dataset.region;
-        const regionName = regionLabelMap[regionKey] || regionKey;
-        // 지도 경계 active
-        document.querySelectorAll('.region-path').forEach(p => p.classList.remove('active-region'));
-        path.classList.add('active-region');
+    function openShopFor(name) {
+        const url = "https://search.shopping.naver.com/search/all?query=" + encodeURIComponent(name + " 버터떡");
+        window.open(url, "_blank");
+    }
 
-        // 팝업 콘텐츠 업데이트
-        popupRegionLabel.textContent = regionName;
-        popupTitle.textContent = regionName + " 버터떡 라인업";
-        popupDesc.textContent = regionName + " 지역에 등록된 버터떡 명소만 아래 카드에 표시됩니다. "
-            + "지도에서 탐색하거나, 인터넷에서 해당 상호를 바로 검색해 구매할 수 있습니다.";
-        popupButtons.innerHTML = '';
-
-        // 버튼 1: 지도에서 탐색하기(네이버 지도에 region 키워드 검색)
-        const btnMap = document.createElement('a');
-        btnMap.className = 'btn btn-outline';
-        btnMap.href = 'https://map.naver.com/v5/search/' + encodeURIComponent(regionName + ' 버터떡');
-        btnMap.target = '_blank';
-        btnMap.textContent = '지도에서 탐색하기';
-        popupButtons.appendChild(btnMap);
-
-        // 버튼 2: 인터넷 구매하기(쿠팡/스마트스토어 등 키워드 검색)
-        const btnShop = document.createElement('a');
-        btnShop.className = 'btn btn-solid';
-        btnShop.href = 'https://search.shopping.naver.com/search/all?query=' + encodeURIComponent(regionName + ' 버터떡');
-        btnShop.target = '_blank';
-        btnShop.textContent = '인터넷 구매하기';
-        popupButtons.appendChild(btnShop);
-
-        popupEl.classList.add('visible');
-
-        // 하단 카드 필터링
-        applyRegionFilter(regionKey, regionName);
-    });
-
-    path.addEventListener('mouseover', () => path.classList.add('hovered'));
-    path.addEventListener('mouseout', () => path.classList.remove('hovered'));
-});
-
-/* 4) 필터링 */
-function applyRegionFilter(regionKey, label) {
-    document.querySelectorAll('.spot-card').forEach(card => {
-        card.classList.toggle('hidden', card.dataset.region !== regionKey);
-    });
-    document.querySelectorAll('.map-point').forEach(point => {
-        point.style.display = (point.dataset.region === regionKey) ? 'block' : 'none';
-    });
-    currentFilterEl.textContent = label;
-}
-function clearRegionFilter() {
-    document.querySelectorAll('.region-path').forEach(p => p.classList.remove('active-region'));
-    document.querySelectorAll('.spot-card').forEach(card => card.classList.remove('hidden'));
-    document.querySelectorAll('.map-point').forEach(point => point.style.display = 'block');
-    currentFilterEl.textContent = '전체';
-    popupEl.classList.remove('visible');
-}
-
-/* 5) 인터넷 쇼핑몰 구매 버튼 기본 동작 */
-function openShopFor(name) {
-    const url = 'https://search.shopping.naver.com/search/all?query=' + encodeURIComponent(name + ' 버터떡');
-    window.open(url, '_blank');
-}
+    function openGlobalShop() {
+        const url = "https://search.shopping.naver.com/search/all?query=" + encodeURIComponent("버터떡");
+        window.open(url, "_blank");
+    }
 </script>
+
 </body>
 </html>
