@@ -77,6 +77,7 @@
             min-width:320px;
         }
 
+        /* ★ 예전 지도 이미지 링크로 사용 */
         .real-map-img {
             width: 100%;
             height: auto;
@@ -90,10 +91,11 @@
             pointer-events:none;
         }
 
+        /* ★ 좌표 포인터 1.8배 확대 버전 */
         .marker {
             position: absolute;
-            width: clamp(12px, 2vw, 20px);
-            height: clamp(12px, 2vw, 20px);
+            width: clamp(22px, 3.6vw, 36px);   /* 기본 크기 크게 */
+            height: clamp(22px, 3.6vw, 36px);
             background: #fff;
             border: 3px solid var(--butter-deep);
             border-radius: 50%;
@@ -106,8 +108,9 @@
         }
 
         .marker:hover {
-            transform: translate(-50%, -50%) scale(1.4);
+            transform: translate(-50%, -50%) scale(1.3);
             background: var(--butter-gold);
+            box-shadow: 0 0 30px var(--butter-gold);
         }
 
         .marker .tooltip {
@@ -423,7 +426,8 @@
 <section class="map-fullscreen-section">
     <div class="map-layout">
         <div class="map-container">
-            <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-011158.png"
+            <!-- ★ 이전 이미지 링크로 교체 -->
+            <img src="http://bigfatcat.kr/wp-content/uploads/2026/03/스크린샷-2026-03-20-000001.png"
                  class="real-map-img" alt="대한민국 지도">
 
             <div id="points-container"></div>
@@ -476,7 +480,6 @@
     const COUPANG_LINK = "https://link.coupang.com/a/d7Eact";
 
     const spots = [
-        // 서울권 (y ≈ 27%)
         { id:1, region:'서울', name:"새들러하우스",    loc:"서울 강남구 도산대로17길 10 B1",      desc:"상하이식 버터 쫀득떡, 플레인·초코·치즈 라인업.", x:46,  y:27 },
         { id:2, region:'서울', name:"이웃집통통이",    loc:"서울 강남구 선릉로161길 19 1층",     desc:"글루텐 프리 상하이 버터떡, 압구정·망원점 운영.", x:47,  y:26.5 },
         { id:3, region:'서울', name:"하우스엠",        loc:"서울 강남구 논현로26길 42 1층",      desc:"하트 모양 겉바속쫀 버터떡 카페.",                   x:45,  y:28 },
@@ -486,46 +489,37 @@
         { id:7, region:'서울', name:"구십이도",        loc:"서울 광진구 능동 221-13",            desc:"상하이 출신 디저트 셰프가 만든 버터떡 카페.",      x:50.5,y:26.5 },
         { id:8, region:'서울', name:"카페 봉맨션",      loc:"서울 서대문구 가좌로 118 2층",       desc:"상하이 스타일 버터떡을 즐길 수 있는 카페.",        x:42,  y:27 },
         { id:9, region:'서울', name:"돌체디앤",        loc:"서울 마포구 월드컵로17길 61",        desc:"매일 소량만 나오는 버터떡, 쿠키 전문점.",          x:43,  y:27.5 },
-        { id:10, region:'서울', name:"쿠키앤클레이",   loc:"서울 종로구 삼일대로 437 1층 103호", desc:"여러 타임에 나뉘어 나오는 버터떡.",                x:45,  y:26.5 },
-        { id:11, region:'서울', name:"달콤라르",        loc:"서울 은평구 진관4로 17 818동 101호", desc:"밀가루 없이 안데스 소금 한 알 올린 단짠 버터떡.", x:40,  y:27 },
-        { id:12, region:'서울', name:"카페 이오이",      loc:"서울 마포구 대흥동",                 desc:"하트 모양, 1개 1,500원 가성비 버터떡.",           x:42,  y:28 },
+        { id:10,region:'서울', name:"쿠키앤클레이",    loc:"서울 종로구 삼일대로 437 1층 103호", desc:"여러 타임에 나뉘어 나오는 버터떡.",                x:45,  y:26.5 },
+        { id:11,region:'서울', name:"달콤라르",        loc:"서울 은평구 진관4로 17 818동 101호", desc:"밀가루 없이 안데스 소금 한 알 올린 단짠 버터떡.", x:40,  y:27 },
+        { id:12,region:'서울', name:"카페 이오이",      loc:"서울 마포구 대흥동",                 desc:"하트 모양, 1개 1,500원 가성비 버터떡.",           x:42,  y:28 },
 
-        // 인천
-        { id:13, region:'인천', name:"수제과점",        loc:"인천 미추홀구 경원대로652번길 25-11", desc:"상하이 버터떡 전문 인천 맛집.",                   x:38,  y:30 },
+        { id:13,region:'인천', name:"수제과점",        loc:"인천 미추홀구 경원대로652번길 25-11", desc:"상하이 버터떡 전문 인천 맛집.",                   x:38,  y:30 },
 
-        // 경기
-        { id:14, region:'경기', name:"오브더밀",        loc:"경기 안성시",                        desc:"안성 상하이 버터떡으로 알려진 베이커리.",          x:48,  y:42 },
-        { id:15, region:'경기', name:"비에델",          loc:"경기 평택시 고덕",                    desc:"평택 고덕 상하이 버터떡 카페.",                    x:46,  y:44 },
+        { id:14,region:'경기', name:"오브더밀",        loc:"경기 안성시",                        desc:"안성 상하이 버터떡으로 알려진 베이커리.",          x:48,  y:42 },
+        { id:15,region:'경기', name:"비에델",          loc:"경기 평택시 고덕",                    desc:"평택 고덕 상하이 버터떡 카페.",                    x:46,  y:44 },
 
-        // 강원 (서울보다 위쪽)
-        { id:16, region:'강원', name:"춘천 감자밭",     loc:"강원 춘천시",                        desc:"치즈 버터 감자떡 스타일 퓨전 간식.",              x:55,  y:21 },
-        { id:17, region:'강원', name:"정선 수리취떡",   loc:"강원 정선군",                        desc:"수리취 버터 와플 떡, 이색 미식.",                 x:60,  y:26 },
+        { id:16,region:'강원', name:"춘천 감자밭",     loc:"강원 춘천시",                        desc:"치즈 버터 감자떡 스타일 퓨전 간식.",              x:55,  y:21 },
+        { id:17,region:'강원', name:"정선 수리취떡",   loc:"강원 정선군",                        desc:"수리취 버터 와플 떡, 이색 미식.",                 x:60,  y:26 },
 
-        // 충청
-        { id:18, region:'충북', name:"청주 본정",      loc:"충북 청주시",                        desc:"버터 크림 떡 케이크 계열.",                      x:50,  y:39 },
-        { id:19, region:'충남', name:"공주 부자떡집",  loc:"충남 공주시",                        desc:"알밤 버터 찹쌀떡.",                               x:45,  y:43 },
-        { id:20, region:'대전', name:"성심당",         loc:"대전 서구",                          desc:"성심당 기술력이 담긴 버터 풍미 떡.",              x:49,  y:46 },
+        { id:18,region:'충북', name:"청주 본정",       loc:"충북 청주시",                        desc:"버터 크림 떡 케이크 계열.",                      x:50,  y:39 },
+        { id:19,region:'충남', name:"공주 부자떡집",   loc:"충남 공주시",                        desc:"알밤 버터 찹쌀떡.",                               x:45,  y:43 },
+        { id:20,region:'대전', name:"성심당",          loc:"대전 서구",                          desc:"성심당 기술력이 담긴 버터 풍미 떡.",              x:49,  y:46 },
 
-        // 전라
-        { id:21, region:'전북', name:"전주 교동떡갈비",loc:"전북 전주시",                        desc:"한옥마을 구워먹는 버터 치즈떡.",                  x:43,  y:55 },
-        { id:22, region:'전북', name:"익산 농협 떡방", loc:"전북 익산시",                        desc:"생크림 찹쌀떡 대란템.",                           x:45,  y:52 },
-        { id:23, region:'광주', name:"광주 버터떡 카페",loc:"광주광역시",                        desc:"광주 버터떡 핫플들을 대표하는 집.",               x:40,  y:62 },
-        { id:24, region:'전남', name:"영광 민속떡집",  loc:"전남 영광군",                        desc:"모시 버터 크림떡.",                              x:35,  y:66 },
+        { id:21,region:'전북', name:"전주 교동떡갈비", loc:"전북 전주시",                        desc:"한옥마을 구워먹는 버터 치즈떡.",                  x:43,  y:55 },
+        { id:22,region:'전북', name:"익산 농협 떡방",  loc:"전북 익산시",                        desc:"생크림 찹쌀떡 대란템.",                           x:45,  y:52 },
+        { id:23,region:'광주', name:"광주 버터떡 카페",loc:"광주광역시",                        desc:"광주 버터떡 핫플들을 대표하는 집.",               x:40,  y:62 },
+        { id:24,region:'전남', name:"영광 민속떡집",   loc:"전남 영광군",                        desc:"모시 버터 크림떡.",                              x:35,  y:66 },
 
-        // 경북·대구
-        { id:25, region:'경북', name:"안동 버선버선",  loc:"경북 안동시",                        desc:"안동 종가집 손맛에 버터 풍미를 더한 떡.",         x:63,  y:40 },
-        { id:26, region:'경북', name:"황남빵(퓨전)",   loc:"경북 경주시",                        desc:"황남동 일대 버터 앙금 계열 디저트.",             x:68,  y:50 },
-        { id:27, region:'대구', name:"대구 버터떡집",  loc:"대구 중구",                          desc:"상하이 버터떡 콘셉트 디저트 카페.",              x:64,  y:48 },
+        { id:25,region:'경북', name:"안동 버선버선",   loc:"경북 안동시",                        desc:"안동 종가집 손맛에 버터 풍미를 더한 떡.",         x:63,  y:40 },
+        { id:26,region:'경북', name:"황남빵(퓨전)",    loc:"경북 경주시",                        desc:"황남동 일대 버터 앙금 계열 디저트.",             x:68,  y:50 },
+        { id:27,region:'대구', name:"대구 버터떡집",   loc:"대구 중구",                          desc:"상하이 버터떡 콘셉트 디저트 카페.",              x:64,  y:48 },
 
-        // 경남
-        { id:28, region:'경남', name:"의령 망개떡 변주",loc:"경남 의령군",                       desc:"유제품 향을 살짝 더한 망개떡 스타일.",           x:57,  y:56 },
+        { id:28,region:'경남', name:"의령 망개떡 변주",loc:"경남 의령군",                       desc:"유제품 향을 살짝 더한 망개떡 스타일.",           x:57,  y:56 },
 
-        // 부산 (아래에서 38% → 위에서 62%)
-        { id:29, region:'부산', name:"희와제과",       loc:"부산 진구",                          desc:"버터 팥 크림 떡빵 계열 디저트.",                 x:69,  y:62 },
-        { id:30, region:'부산', name:"명가떡집 전포",   loc:"부산 전포동",                        desc:"서면 일대 앙버터 설기로 유명한 떡집.",          x:71,  y:63 },
+        { id:29,region:'부산', name:"희와제과",        loc:"부산 진구",                          desc:"버터 팥 크림 떡빵 계열 디저트.",                 x:69,  y:62 },
+        { id:30,region:'부산', name:"명가떡집 전포",   loc:"부산 전포동",                        desc:"서면 일대 앙버터 설기로 유명한 떡집.",          x:71,  y:63 },
 
-        // 제주
-        { id:31, region:'제주', name:"아베베 베이커리", loc:"제주 제주시",                        desc:"제주 재료와 버터 떡·도넛을 함께 파는 베이커리.", x:50,  y:84 }
+        { id:31,region:'제주', name:"아베베 베이커리", loc:"제주 제주시",                        desc:"제주 재료와 버터 떡·도넛을 함께 파는 베이커리.", x:50,  y:84 }
     ];
 
     const pointContainer = document.getElementById('points-container');
@@ -537,7 +531,6 @@
     const popupButtons = document.getElementById('popup-buttons');
     const currentFilterLabel = document.getElementById('current-filter-label');
 
-    // 카드 생성
     spots.forEach(spot => {
         const card = document.createElement('article');
         card.className = 'card';
@@ -566,7 +559,6 @@
         cardGrid.appendChild(card);
     });
 
-    // 지도 포인트 생성
     spots.forEach(spot => {
         const marker = document.createElement('div');
         marker.className = 'marker';
