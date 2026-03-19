@@ -101,7 +101,6 @@
             pointer-events:none;
         }
 
-        /* 마커 1.8배 확대 - 여기 하나만 사용 */
         .marker {
             position: absolute;
             width: clamp(22px, 3.6vw, 36px);
@@ -486,48 +485,48 @@
 <script>
     const COUPANG_LINK = "https://link.coupang.com/a/d7Eact";
 
-    /* 주소(loc)를 제거한 버전: name, region, desc, x,y만 사용 */
+    /* 좌표 보정 버전: x - 15, y - 10 */
     const spots = [
-        { id:1, region:'서울', name:"새들러하우스",    desc:"상하이식 버터 쫀득떡, 플레인·초코·치즈 라인업.", x:55.5,  y:34.6 },
-        { id:2, region:'서울', name:"이웃집통통이",    desc:"글루텐 프리 상하이 버터떡, 압구정·망원점 운영.", x:57,    y:34   },
-        { id:3, region:'서울', name:"하우스엠",        desc:"하트 모양 겉바속쫀 버터떡 카페.",                   x:54,    y:36   },
-        { id:4, region:'서울', name:"하츠베이커리 성수",desc:"왕버터떡으로 유명한 성수 디저트 스폿.",             x:59,    y:34.5 },
-        { id:5, region:'서울', name:"오우드 성수",      desc:"마들렌 모양 버터떡, 성수 카페.",                    x:60.5,  y:35   },
-        { id:6, region:'서울', name:"늘해피",          desc:"버터떡 2개·5개 묶음 판매, 가볍게 즐기기 좋은 곳.", x:54.5, y:37   },
-        { id:7, region:'서울', name:"구십이도",        desc:"상하이 출신 디저트 셰프가 만든 버터떡 카페.",      x:60.5, y:33.5 },
-        { id:8, region:'서울', name:"카페 봉맨션",      desc:"상하이 스타일 버터떡을 즐길 수 있는 카페.",        x:49,   y:34.5 },
-        { id:9, region:'서울', name:"돌체디앤",        desc:"매일 소량만 나오는 버터떡, 쿠키 전문점.",          x:51,   y:35   },
-        { id:10,region:'서울', name:"쿠키앤클레이",    desc:"여러 타임에 나뉘어 나오는 버터떡.",                x:54,   y:33.5 },
-        { id:11,region:'서울', name:"달콤라르",        desc:"밀가루 없이 안데스 소금 한 알 올린 단짠 버터떡.", x:47,   y:34   },
-        { id:12,region:'서울', name:"카페 이오이",      desc:"하트 모양, 1개 1,500원 가성비 버터떡.",           x:51,   y:36   },
+        { id:1, region:'서울', name:"새들러하우스",    desc:"상하이식 버터 쫀득떡, 플레인·초코·치즈 라인업.", x:40.5,  y:24.6 },
+        { id:2, region:'서울', name:"이웃집통통이",    desc:"글루텐 프리 상하이 버터떡, 압구정·망원점 운영.", x:42,    y:24   },
+        { id:3, region:'서울', name:"하우스엠",        desc:"하트 모양 겉바속쫀 버터떡 카페.",                   x:39,    y:26   },
+        { id:4, region:'서울', name:"하츠베이커리 성수",desc:"왕버터떡으로 유명한 성수 디저트 스폿.",             x:44,    y:24.5 },
+        { id:5, region:'서울', name:"오우드 성수",      desc:"마들렌 모양 버터떡, 성수 카페.",                    x:45.5,  y:25   },
+        { id:6, region:'서울', name:"늘해피",          desc:"버터떡 2개·5개 묶음 판매, 가볍게 즐기기 좋은 곳.", x:39.5, y:27   },
+        { id:7, region:'서울', name:"구십이도",        desc:"상하이 출신 디저트 셰프가 만든 버터떡 카페.",      x:45.5, y:23.5 },
+        { id:8, region:'서울', name:"카페 봉맨션",      desc:"상하이 스타일 버터떡을 즐길 수 있는 카페.",        x:34,    y:24.5 },
+        { id:9, region:'서울', name:"돌체디앤",        desc:"매일 소량만 나오는 버터떡, 쿠키 전문점.",          x:36,    y:25   },
+        { id:10,region:'서울', name:"쿠키앤클레이",    desc:"여러 타임에 나뉘어 나오는 버터떡.",                x:39,    y:23.5 },
+        { id:11,region:'서울', name:"달콤라르",        desc:"밀가루 없이 안데스 소금 한 알 올린 단짠 버터떡.", x:32,    y:24   },
+        { id:12,region:'서울', name:"카페 이오이",      desc:"하트 모양, 1개 1,500원 가성비 버터떡.",           x:36,    y:26   },
 
-        { id:13,region:'인천', name:"수제과점",        desc:"상하이 버터떡 전문 인천 맛집.",                    x:45,   y:36 },
+        { id:13,region:'인천', name:"수제과점",        desc:"상하이 버터떡 전문 인천 맛집.",                    x:30,    y:26 },
 
-        { id:14,region:'경기', name:"오브더밀",        desc:"안성 상하이 버터떡으로 알려진 베이커리.",          x:57,   y:48 },
-        { id:15,region:'경기', name:"비에델",          desc:"평택 고덕 상하이 버터떡 카페.",                    x:55,   y:50 },
+        { id:14,region:'경기', name:"오브더밀",        desc:"안성 상하이 버터떡으로 알려진 베이커리.",          x:42,    y:38 },
+        { id:15,region:'경기', name:"비에델",          desc:"평택 고덕 상하이 버터떡 카페.",                    x:40,    y:40 },
 
-        { id:16,region:'강원', name:"춘천 감자밭",     desc:"치즈 버터 감자떡 스타일 퓨전 간식.",              x:60,   y:26 },
-        { id:17,region:'강원', name:"정선 수리취떡",   desc:"수리취 버터 와플 떡, 이색 미식.",                 x:65,   y:31 },
+        { id:16,region:'강원', name:"춘천 감자밭",     desc:"치즈 버터 감자떡 스타일 퓨전 간식.",              x:45,    y:16 },
+        { id:17,region:'강원', name:"정선 수리취떡",   desc:"수리취 버터 와플 떡, 이색 미식.",                 x:50,    y:21 },
 
-        { id:18,region:'충북', name:"청주 본정",       desc:"버터 크림 떡 케이크 계열.",                      x:58,   y:46 },
-        { id:19,region:'충남', name:"공주 부자떡집",   desc:"알밤 버터 찹쌀떡.",                               x:53,   y:51 },
-        { id:20,region:'대전', name:"성심당",          desc:"성심당 기술력이 담긴 버터 풍미 떡.",              x:57,   y:53 },
+        { id:18,region:'충북', name:"청주 본정",        desc:"버터 크림 떡 케이크 계열.",                      x:43,    y:36 },
+        { id:19,region:'충남', name:"공주 부자떡집",   desc:"알밤 버터 찹쌀떡.",                                x:38,    y:41 },
+        { id:20,region:'대전', name:"성심당",          desc:"성심당 기술력이 담긴 버터 풍미 떡.",              x:42,    y:43 },
 
-        { id:21,region:'전북', name:"전주 교동떡갈비", desc:"한옥마을 구워먹는 버터 치즈떡.",                  x:52,   y:60 },
-        { id:22,region:'전북', name:"익산 농협 떡방",  desc:"생크림 찹쌀떡 대란템.",                           x:54,   y:58 },
-        { id:23,region:'광주', name:"광주 버터떡 카페",desc:"광주 버터떡 핫플들을 대표하는 집.",               x:50,   y:66 },
-        { id:24,region:'전남', name:"영광 민속떡집",   desc:"모시 버터 크림떡.",                              x:45,   y:69 },
+        { id:21,region:'전북', name:"전주 교동떡갈비", desc:"한옥마을 구워먹는 버터 치즈떡.",                  x:37,    y:50 },
+        { id:22,region:'전북', name:"익산 농협 떡방",  desc:"생크림 찹쌀떡 대란템.",                            x:39,    y:48 },
+        { id:23,region:'광주', name:"광주 버터떡 카페",desc:"광주 버터떡 핫플들을 대표하는 집.",               x:35,    y:56 },
+        { id:24,region:'전남', name:"영광 민속떡집",    desc:"모시 버터 크림떡.",                                x:30,    y:59 },
 
-        { id:25,region:'경북', name:"안동 버선버선",   desc:"안동 종가집 손맛에 버터 풍미를 더한 떡.",         x:66,   y:44 },
-        { id:26,region:'경북', name:"황남빵(퓨전)",    desc:"황남동 일대 버터 앙금 계열 디저트.",             x:70,   y:53 },
-        { id:27,region:'대구', name:"대구 버터떡집",   desc:"상하이 버터떡 콘셉트 디저트 카페.",              x:65,   y:52 },
+        { id:25,region:'경북', name:"안동 버선버선",    desc:"안동 종가집 손맛에 버터 풍미를 더한 떡.",          x:51,    y:34 },
+        { id:26,region:'경북', name:"황남빵(퓨전)",     desc:"황남동 일대 버터 앙금 계열 디저트.",              x:55,    y:43 },
+        { id:27,region:'대구', name:"대구 버터떡집",    desc:"상하이 버터떡 콘셉트 디저트 카페.",              x:50,    y:42 },
 
-        { id:28,region:'경남', name:"의령 망개떡 변주",desc:"유제품 향을 살짝 더한 망개떡 스타일.",           x:60,   y:60 },
+        { id:28,region:'경남', name:"의령 망개떡 변주",desc:"유제품 향을 살짝 더한 망개떡 스타일.",           x:45,    y:50 },
 
-        { id:29,region:'부산', name:"희와제과",        desc:"버터 팥 크림 떡빵 계열 디저트.",                 x:73.0, y:74.4 },
-        { id:30,region:'부산', name:"명가떡집 전포",   desc:"서면 일대 앙버터 설기로 유명한 떡집.",          x:75,   y:75 },
+        { id:29,region:'부산', name:"희와제과",        desc:"버터 팥 크림 떡빵 계열 디저트.",                 x:58.0, y:64.4 },
+        { id:30,region:'부산', name:"명가떡집 전포",   desc:"서면 일대 앙버터 설기로 유명한 떡집.",          x:60,    y:65 },
 
-        { id:31,region:'제주', name:"아베베 베이커리", desc:"제주 재료와 버터 떡·도넛을 함께 파는 베이커리.", x:54.1, y:92.9 }
+        { id:31,region:'제주', name:"아베베 베이커리", desc:"제주 재료와 버터 떡·도넛을 함께 파는 베이커리.", x:39.1, y:82.9 }
     ];
 
     const pointContainer = document.getElementById('points-container');
@@ -539,7 +538,7 @@
     const popupButtons = document.getElementById('popup-buttons');
     const currentFilterLabel = document.getElementById('current-filter-label');
 
-    // 카드 생성 (주소 제거 버전)
+    // 카드 생성
     spots.forEach(spot => {
         const card = document.createElement('article');
         card.className = 'card';
@@ -554,7 +553,7 @@
                     <a class="btn-naver"
                        href="https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}"
                        target="_blank">
-                        네이버 지도에서 탐색하기
+                         네이버 지도에서 탐색하기
                     </a>
                     <button class="btn-buy-small"
                             onclick="openShopFor(); event.stopPropagation();">
@@ -567,7 +566,7 @@
         cardGrid.appendChild(card);
     });
 
-    // 지도 포인트 생성 (툴팁에서도 주소 제거)
+    // 지도 포인트 생성
     spots.forEach(spot => {
         const marker = document.createElement('div');
         marker.className = 'marker';
